@@ -41,7 +41,7 @@ def check():
             return render_template("login.html", message=message)
 
 
-@auth_.route("/logout", methods=["POST"])
+@auth_.route("/logout", methods=["POST", "GET"])
 @flask_login.login_required
 def logout():
     flask_login.logout_user()

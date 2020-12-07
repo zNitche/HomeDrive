@@ -1,6 +1,7 @@
-from flask import render_template, Blueprint, redirect, url_for
+from flask import render_template, Blueprint, redirect, url_for, request, send_file
 from flask import current_app as app
 import flask_login
+import os
 
 
 MAX_UPLOAD_SIZE = app.config["MAX_UPLOAD_SIZE"]
@@ -16,9 +17,54 @@ content_ = Blueprint("content", __name__, template_folder='template', static_fol
 @content_.route("/")
 def home():
     if flask_login.current_user.is_authenticated:
-        return render_template("index.html")
+        files = os.listdir(FILES_LOCATION)
+
+        return render_template("index.html", files=files)
     else:
         return redirect(url_for("auth.login"))
+
+
+@content_.route("/main/upload", methods=["POST"])
+@flask_login.login_required
+def upload():
+    file = request.files["file-upload"]
+
+    if file.filename is "":
+         return redirect(url_for("content.home"))
+
+    if file.filename in os.listdir(FILES_LOCATION):
+        message = "File already exists"
+        files = os.listdir(FILES_LOCATION)
+
+        return render_template("index.html", message=message, files=files)
+
+    file.save(f"{FILES_LOCATION}{file.filename}")
+
+    return redirect(url_for("content.home"))
+
+
+@content_.route("/main/operations", methods=["GET", "POST"])
+@flask_login.login_required
+def operations():
+    if request.args.get("download_file"):
+        file_name = request.args.get("download_file")
+        return redirect(url_for("content.download", file_name=file_name))
+    elif request.args.get("delete_file"):
+        file_name = request.args.get("delete_file")
+        return redirect(url_for("content.delete", file_name=file_name))
+
+
+@content_.route("/main/download/<file_name>", methods=["GET"])
+@flask_login.login_required
+def download(file_name):
+    return send_file(f'{FILES_LOCATION}{file_name}', as_attachment=True, attachment_filename=f'{file_name}', cache_timeout=0)
+
+
+@content_.route("/main/delete/<file_name>", methods=["GET"])
+@flask_login.login_required
+def delete(file_name):
+    os.remove(f"{FILES_LOCATION}{file_name}")
+    return redirect(url_for("content.home"))
 
 
 @app.errorhandler(404)
@@ -33,7 +79,7 @@ def overloaded(error):
 
 @app.errorhandler(401)
 def non_authenticated(error):
-    return render_template("error.html", message=error)
+    return redirect(url_for("auth.login"))
 
 
 @app.errorhandler(405)
