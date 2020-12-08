@@ -29,7 +29,7 @@ def home():
 def upload():
     file = request.files["file-upload"]
 
-    if file.filename is "":
+    if file.filename == "":
          return redirect(url_for("content.home"))
 
     if file.filename in os.listdir(FILES_LOCATION):

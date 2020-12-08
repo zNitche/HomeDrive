@@ -2,17 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+
     <title>HomeDrive</title>
 </head>
 <body>
-    <h1>HomeDrive Login</h1>
-    <form method="POST" action="/login/check">
-        <p><input type="text" id="login" name="user_name" placeholder="login" /></p>
-        <p><input type="password" id="password" name="password" placeholder="password" /></p>
-        <p>
-            <button type="submit">Log in</button>
-        </p>
-        <p>{{message}}</p>
-    </form>
+    <div class="container">
+        <div class="login-container">
+            <div class="login-content">
+                <p class="login-title">HomeDrive</p>
+                <form method="POST" action="/login/check">
+                    <input class="login-form-input" type="text" id="login" name="user_name" placeholder="login" />
+                    <input class="login-form-input" type="password" id="password" name="password" placeholder="password" />
+                    <button class="login-button" type="submit">Log in</button>
+                </form>
+                <div class="login-message">
+                    {{message}}
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
