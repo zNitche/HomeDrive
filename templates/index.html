@@ -12,13 +12,14 @@
         <div class="navbar">
             <span class="main-title">HomeDrive</span>
             <form action="/logout" method="POST">
-                <button type="submit">Logout</button>
+                <button class="logout-button" type="submit">Logout</button>
             </form>
         </div>
         <div class="upload-container">
             <form action="/main/upload" method="POST" enctype="multipart/form-data">
-                <input type="file" value="File to be uploaded" id="file-upload" name="file-upload" />
-                <button type="submit">Upload</button>
+                <label for="file-upload" class="upload-file-label">Choose File</label>
+                <input type="file" class="upload-file" value="File to be uploaded" id="file-upload" name="file-upload" />
+                <p><button class="upload-file-button" type="submit">Upload</button></p>
             </form>
             <p>{{message}}</p>
         </div>
@@ -39,7 +40,7 @@
             </form>
         </div>
         <div class="footer">
-            Footer TODO
+            {{current_size}} / {{max_size}}
         </div>
     </div>
 </body>

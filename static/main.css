@@ -58,7 +58,7 @@ input.login-form-input {
     padding: 8px;
 }
 
-button.login-button {
+.login-content .login-button {
     background-color: #14A76C;
     color: white;
     width: 50%;
@@ -101,14 +101,28 @@ button.login-button {
 
 .upload-container {
     display: flex;
+    text-align: center;
+    max-height: 80px;
+    align-items: center;
     justify-content: center;
-    flex-direction: column;
-    padding: 0 5px;
-    margin-top: 5px;
+    margin-top: 20px;
 }
 
-.upload-container p {
-    text-align: center;
+.upload-container .upload-file {
+    display: none;
+}
+
+.upload-container .upload-file-label {
+    border: 1px solid white;
+    display: inline-block;
+    padding: 6px 12px;
+}
+
+.upload-container .upload-file-button {
+    background-color: #FFE400;
+    color: white;
+    border-radius: 10px;
+    width: 100%;
 }
 
 .item {
@@ -143,4 +157,24 @@ button.login-button {
     bottom: 0;
     text-align: center;
     padding: 5px;
+}
+
+.login-button:hover {
+    background-color: #16905f;
+}
+
+.logout-button:hover {
+    background-color: #313131;
+}
+
+.upload-file-button:hover {
+    background-color: #e0c800;
+}
+
+.delete-button:hover {
+    background-color: #c30202;
+}
+
+.download-button:hover {
+    background-color: #108656;
 }

@@ -2,12 +2,15 @@ from flask import render_template, Blueprint, redirect, url_for, request, send_f
 from flask import current_app as app
 import flask_login
 import os
+from Utils import getCurrentFilesSize
 
 
 MAX_UPLOAD_SIZE = app.config["MAX_UPLOAD_SIZE"]
 FILES_LOCATION = app.config["FILES_LOCATION"]
 CURRENT_DIR = app.config["CURRENT_DIR"]
 MAX_FILES_SIZE = app.config["MAX_FILES_SIZE"]
+TMP_LOCATION = app.config["TMP_LOCATION"]
+
 
 app.config['MAX_CONTENT_LENGTH'] = MAX_UPLOAD_SIZE * 1024 * 1024
 
@@ -19,7 +22,9 @@ def home():
     if flask_login.current_user.is_authenticated:
         files = os.listdir(FILES_LOCATION)
 
-        return render_template("index.html", files=files)
+        current_size = f"{str(round(getCurrentFilesSize(FILES_LOCATION) / 1000000000, 2))} GB"
+        max_size = f"{MAX_FILES_SIZE/1000000000} GB"
+        return render_template("index.html", files=files, max_size=max_size, current_size=current_size)
     else:
         return redirect(url_for("auth.login"))
 
@@ -36,9 +41,17 @@ def upload():
         message = "File already exists"
         files = os.listdir(FILES_LOCATION)
 
-        return render_template("index.html", message=message, files=files)
+        current_size = f"{str(round(getCurrentFilesSize(FILES_LOCATION) / 1000000000, 2))} GB"
+        max_size = f"{MAX_FILES_SIZE / 1000000000} GB"
 
-    file.save(f"{FILES_LOCATION}{file.filename}")
+        return render_template("index.html", message=message, files=files, max_size=max_size, current_size=current_size)
+
+    file.save(f"{TMP_LOCATION}{file.filename}")
+
+    if (os.path.getsize(f"{TMP_LOCATION}{file.filename}")) + getCurrentFilesSize(FILES_LOCATION) < MAX_FILES_SIZE:
+        os.rename(f"{TMP_LOCATION}{file.filename}", f"{FILES_LOCATION}{file.filename}")
+    else:
+        os.remove(f"{TMP_LOCATION}{file.filename}")
 
     return redirect(url_for("content.home"))
 
