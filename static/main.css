@@ -159,6 +159,14 @@ input.login-form-input {
     padding: 5px;
 }
 
+/*.delete-confirmation-modal {
+    display: none;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background-color: black;
+}*/
+
 .login-button:hover {
     background-color: #16905f;
 }

@@ -10,9 +10,8 @@ FILES_LOCATION = app.config["FILES_LOCATION"]
 CURRENT_DIR = app.config["CURRENT_DIR"]
 MAX_FILES_SIZE = app.config["MAX_FILES_SIZE"]
 TMP_LOCATION = app.config["TMP_LOCATION"]
-
-
 app.config['MAX_CONTENT_LENGTH'] = MAX_UPLOAD_SIZE * 1024 * 1024
+
 
 content_ = Blueprint("content", __name__, template_folder='template', static_folder='static')
 
@@ -35,7 +34,7 @@ def upload():
     file = request.files["file-upload"]
 
     if file.filename == "":
-         return redirect(url_for("content.home"))
+        return redirect(url_for("content.home"))
 
     if file.filename in os.listdir(FILES_LOCATION):
         message = "File already exists"
