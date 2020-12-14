@@ -69,7 +69,10 @@ def operations():
 @content_.route("/main/download/<file_name>", methods=["GET"])
 @flask_login.login_required
 def download(file_name):
-    return send_file(f'{FILES_LOCATION}{file_name}', as_attachment=True, attachment_filename=f'{file_name}', cache_timeout=0)
+    if file_name.endswith(".pdf") or file_name.endswith(".jpg") or file_name.endswith(".png"):
+        return send_file(f'{FILES_LOCATION}{file_name}', as_attachment=False, attachment_filename=f'{file_name}', cache_timeout=0)
+    else:
+        return send_file(f'{FILES_LOCATION}{file_name}', as_attachment=True, attachment_filename=f'{file_name}', cache_timeout=0)
 
 
 @content_.route("/main/delete/<file_name>", methods=["GET"])
