@@ -100,12 +100,10 @@ input.login-form-input {
 }
 
 .upload-container {
+    margin-bottom: 20px;
     display: flex;
-    text-align: center;
-    max-height: 80px;
-    align-items: center;
     justify-content: center;
-    margin-top: 20px;
+    align-items: center;
 }
 
 .upload-container .upload-file {
@@ -131,6 +129,10 @@ input.login-form-input {
     margin-bottom: 5px;
     padding: 20px 5px;
     flex-wrap: wrap;
+}
+
+.file-name {
+    text-align: center;
 }
 
 .item-buttons {
@@ -173,6 +175,15 @@ input.login-form-input {
 
 .logout-button:hover {
     background-color: #313131;
+}
+
+.upload-button:hover {
+    background-color: #313131;
+}
+
+.upload-button a {
+    text-decoration: none;
+    color: #FFE400;
 }
 
 .upload-file-button:hover {

@@ -2,7 +2,7 @@ from flask import render_template, Blueprint, redirect, url_for, request, send_f
 from flask import current_app as app
 import flask_login
 import os
-from Utils import getCurrentFilesSize
+from Utils import get_current_files_size
 
 
 MAX_UPLOAD_SIZE = app.config["MAX_UPLOAD_SIZE"]
@@ -21,11 +21,35 @@ def home():
     if flask_login.current_user.is_authenticated:
         files = os.listdir(FILES_LOCATION)
 
-        current_size = f"{str(round(getCurrentFilesSize(FILES_LOCATION) / 1000000000, 2))} GB"
+        current_size = f"{str(round(get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
         max_size = f"{MAX_FILES_SIZE/1000000000} GB"
-        return render_template("index.html", files=files, max_size=max_size, current_size=current_size)
+
+        can_delete = flask_login.current_user.can_delete_files
+        can_upload = flask_login.current_user.can_upload
+
+        return render_template("index.html", files=files, max_size=max_size, current_size=current_size,
+                               can_delete=can_delete, can_upload=can_upload)
     else:
         return redirect(url_for("auth.login"))
+
+
+@content_.route("/upload")
+@flask_login.login_required
+def upload_view():
+    can_upload = flask_login.current_user.can_upload
+
+    if can_upload:
+        files = os.listdir(FILES_LOCATION)
+
+        current_size = f"{str(round(get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
+        max_size = f"{MAX_FILES_SIZE / 1000000000} GB"
+
+        can_delete = flask_login.current_user.can_delete_files
+
+        return render_template("upload.html", files=files, max_size=max_size, current_size=current_size,
+                                   can_delete=can_delete, can_upload=can_upload)
+    else:
+        return redirect(url_for("content.home"))
 
 
 @content_.route("/main/upload", methods=["POST"])
@@ -40,17 +64,22 @@ def upload():
         message = "File already exists"
         files = os.listdir(FILES_LOCATION)
 
-        current_size = f"{str(round(getCurrentFilesSize(FILES_LOCATION) / 1000000000, 2))} GB"
+        current_size = f"{str(round(get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
         max_size = f"{MAX_FILES_SIZE / 1000000000} GB"
 
-        return render_template("index.html", message=message, files=files, max_size=max_size, current_size=current_size)
+        can_delete = flask_login.current_user.can_delete_files
+        can_upload = flask_login.current_user.can_upload
 
-    file.save(f"{TMP_LOCATION}{file.filename}")
+        return render_template("index.html", message=message, files=files, max_size=max_size, current_size=current_size,
+                               can_delete=can_delete, can_upload=can_upload)
 
-    if (os.path.getsize(f"{TMP_LOCATION}{file.filename}")) + getCurrentFilesSize(FILES_LOCATION) < MAX_FILES_SIZE:
-        os.rename(f"{TMP_LOCATION}{file.filename}", f"{FILES_LOCATION}{file.filename}")
-    else:
-        os.remove(f"{TMP_LOCATION}{file.filename}")
+    if flask_login.current_user.can_upload:
+        file.save(f"{TMP_LOCATION}{file.filename}")
+
+        if (os.path.getsize(f"{TMP_LOCATION}{file.filename}")) + get_current_files_size(FILES_LOCATION) < MAX_FILES_SIZE:
+            os.rename(f"{TMP_LOCATION}{file.filename}", f"{FILES_LOCATION}{file.filename}")
+        else:
+            os.remove(f"{TMP_LOCATION}{file.filename}")
 
     return redirect(url_for("content.home"))
 
@@ -78,7 +107,9 @@ def download(file_name):
 @content_.route("/main/delete/<file_name>", methods=["GET"])
 @flask_login.login_required
 def delete(file_name):
-    os.remove(f"{FILES_LOCATION}{file_name}")
+    if flask_login.current_user.can_delete_files:
+        os.remove(f"{FILES_LOCATION}{file_name}")
+
     return redirect(url_for("content.home"))
 
 
