@@ -124,6 +124,21 @@ input.login-form-input {
     width: 100%;
 }
 
+.mode-panel {
+    padding: 10px;
+    color: #FFE400;
+}
+
+.mode-panel a:link {
+    color: #FFE400;
+}
+.mode-panel a:visited {
+    color: #FFE400;
+}
+.mode-panel a:hover {
+    color:#ffcc00;
+}
+
 .item {
     display: flex;
     background-color: #373636;

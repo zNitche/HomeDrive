@@ -10,6 +10,7 @@ FILES_LOCATION = app.config["FILES_LOCATION"]
 CURRENT_DIR = app.config["CURRENT_DIR"]
 MAX_FILES_SIZE = app.config["MAX_FILES_SIZE"]
 TMP_LOCATION = app.config["TMP_LOCATION"]
+PRIVATE_FILES_LOCATION = app.config["PRIVATE_FILES_LOCATION"]
 app.config['MAX_CONTENT_LENGTH'] = MAX_UPLOAD_SIZE * 1024 * 1024
 
 
@@ -26,11 +27,32 @@ def home():
 
         can_delete = flask_login.current_user.can_delete_files
         can_upload = flask_login.current_user.can_upload
+        have_private_space = flask_login.current_user.have_private_space
 
         return render_template("index.html", files=files, max_size=max_size, current_size=current_size,
-                               can_delete=can_delete, can_upload=can_upload)
+                               can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space)
     else:
         return redirect(url_for("auth.login"))
+
+
+@content_.route("/private")
+@flask_login.login_required
+def private():
+    if flask_login.current_user.have_private_space:
+        user = flask_login.current_user.id
+        files = os.listdir(f"{PRIVATE_FILES_LOCATION}/{user}")
+
+        current_size = f"{str(round(get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
+        max_size = f"{MAX_FILES_SIZE / 1000000000} GB"
+
+        can_delete = flask_login.current_user.can_delete_files
+        can_upload = flask_login.current_user.can_upload
+        have_private_space = flask_login.current_user.have_private_space
+
+        return render_template("index.html", files=files, max_size=max_size, current_size=current_size,
+                               can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space)
+    else:
+        return redirect(url_for("content.home"))
 
 
 @content_.route("/upload")
@@ -61,7 +83,6 @@ def upload():
         return redirect(url_for("content.home"))
 
     if file.filename in os.listdir(FILES_LOCATION):
-        message = "File already exists"
         files = os.listdir(FILES_LOCATION)
 
         current_size = f"{str(round(get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
@@ -69,9 +90,10 @@ def upload():
 
         can_delete = flask_login.current_user.can_delete_files
         can_upload = flask_login.current_user.can_upload
+        have_private_space = flask_login.current_user.have_private_space
 
-        return render_template("index.html", message=message, files=files, max_size=max_size, current_size=current_size,
-                               can_delete=can_delete, can_upload=can_upload)
+        return render_template("index.html", files=files, max_size=max_size, current_size=current_size,
+                               can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space)
 
     if flask_login.current_user.can_upload:
         file.save(f"{TMP_LOCATION}{file.filename}")
