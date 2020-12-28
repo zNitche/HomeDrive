@@ -3,6 +3,7 @@ import flask_login
 from users import User
 from users import users_accounts as users
 from Permissions import delete_permission, private_space_permission, can_upload_permission
+from passlib.hash import sha256_crypt
 
 
 auth_ = Blueprint("auth", __name__, template_folder='template', static_folder='static')
@@ -27,7 +28,7 @@ def check():
 
             username = request.form["user_name"]
 
-            if request.form["password"] == users_accounts[username]["password"]:
+            if sha256_crypt.verify(request.form["password"], users_accounts[username]["password"]):
                 user = User.User(delete_permission(username), private_space_permission(username), can_upload_permission(username))
                 user.id = username
 
