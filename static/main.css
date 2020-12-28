@@ -117,6 +117,7 @@ input.login-form-input {
 }
 
 .upload-container .upload-file-button {
+    display: none;
     background-color: #FFE400;
     color: white;
     border-radius: 10px;
