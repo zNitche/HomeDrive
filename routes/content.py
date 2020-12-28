@@ -134,10 +134,10 @@ def operations_private():
 def download_private(file_name):
     if flask_login.current_user.have_private_space:
         if file_name.endswith(".pdf") or file_name.endswith(".jpg") or file_name.endswith(".png"):
-            return send_file(f"{PRIVATE_FILES_LOCATION}/{flask_login.current_user.id}/{file_name}",
+            return send_file(f"{PRIVATE_FILES_LOCATION}{flask_login.current_user.id}/{file_name}",
                              as_attachment=False, attachment_filename=f'{file_name}', cache_timeout=0)
         else:
-            return send_file(f"{PRIVATE_FILES_LOCATION}/{flask_login.current_user.id}/{file_name}",
+            return send_file(f"{PRIVATE_FILES_LOCATION}{flask_login.current_user.id}/{file_name}",
                              as_attachment=True, attachment_filename=f'{file_name}', cache_timeout=0)
 
 
@@ -145,7 +145,7 @@ def download_private(file_name):
 @flask_login.login_required
 def delete_private(file_name):
     if flask_login.current_user.can_delete_files and flask_login.current_user.have_private_space:
-        os.remove(f"{PRIVATE_FILES_LOCATION}/{flask_login.current_user.id}/{file_name}")
+        os.remove(f"{PRIVATE_FILES_LOCATION}{flask_login.current_user.id}/{file_name}")
 
     return redirect(url_for("content.home"))
 
