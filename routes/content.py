@@ -49,7 +49,7 @@ def private():
         can_upload = flask_login.current_user.can_upload
         have_private_space = flask_login.current_user.have_private_space
 
-        return render_template("index.html", files=files, max_size=max_size, current_size=current_size,
+        return render_template("private.html", files=files, max_size=max_size, current_size=current_size,
                                can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space)
     else:
         return redirect(url_for("content.home"))
@@ -115,6 +115,39 @@ def operations():
     elif request.args.get("delete_file"):
         file_name = request.args.get("delete_file")
         return redirect(url_for("content.delete", file_name=file_name))
+
+
+@content_.route("/main/operations_private", methods=["GET", "POST"])
+@flask_login.login_required
+def operations_private():
+    if flask_login.current_user.have_private_space:
+        if request.args.get("download_file"):
+            file_name = request.args.get("download_file")
+            return redirect(url_for("content.download_private", file_name=file_name))
+        elif request.args.get("delete_file"):
+            file_name = request.args.get("delete_file")
+            return redirect(url_for("content.delete_private", file_name=file_name))
+
+
+@content_.route("/main/download_private/<file_name>", methods=["GET"])
+@flask_login.login_required
+def download_private(file_name):
+    if flask_login.current_user.have_private_space:
+        if file_name.endswith(".pdf") or file_name.endswith(".jpg") or file_name.endswith(".png"):
+            return send_file(f"{PRIVATE_FILES_LOCATION}/{flask_login.current_user.id}/{file_name}",
+                             as_attachment=False, attachment_filename=f'{file_name}', cache_timeout=0)
+        else:
+            return send_file(f"{PRIVATE_FILES_LOCATION}/{flask_login.current_user.id}/{file_name}",
+                             as_attachment=True, attachment_filename=f'{file_name}', cache_timeout=0)
+
+
+@content_.route("/main/delete_private/<file_name>", methods=["GET"])
+@flask_login.login_required
+def delete_private(file_name):
+    if flask_login.current_user.can_delete_files and flask_login.current_user.have_private_space:
+        os.remove(f"{PRIVATE_FILES_LOCATION}/{flask_login.current_user.id}/{file_name}")
+
+    return redirect(url_for("content.home"))
 
 
 @content_.route("/main/download/<file_name>", methods=["GET"])
