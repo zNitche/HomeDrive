@@ -14,3 +14,8 @@ def private_space_permission(username):
 def can_upload_permission(username):
     users = UsersAccounts.users
     return users[username]["can_upload"]
+
+
+def max_private_files_size(username):
+    users = UsersAccounts.users
+    return users[username]["max_files_size"]

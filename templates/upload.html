@@ -27,6 +27,15 @@
                 <p class="file-name">
                     <span id="file_name"></span>
                 </p>
+
+                <input type="radio" id="shared_radio" name="space" value="shared" checked="checked">
+                <label for="shared_radio">shared</label><br>
+
+                {% if have_private_space %}
+                    <input type="radio" id="private_radio" name="space" value="private">
+                    <label for="private_radio">private</label><br><br>
+                {% endif %}
+
                 <p>
                     <button id="upload_button" class="upload-file-button" type="submit">Upload</button>
                 </p>
