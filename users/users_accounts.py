@@ -1,7 +1,9 @@
+import json
+from config import Config
+
+
 class UsersAccounts:
-    users = {"user": {"password": "$5$rounds=535000$z7Cm8cnR0nI4Gi7k$kpyRj/Z7SsaNkRKW4CWG.MsVba9OxEOEvARk3sAf1kD",
-                      "have_private_space": True, "can_delete_files": True, "can_upload": True, "max_files_size": 5000000000},
-             "tester": {"password": "$5$rounds=535000$m5aFKTEJnaPBqB3c$ZAhJFsszVZD.WJuDvwORa.KgRN5CXlwvVevfl/00UFC",
-                        "have_private_space": False, "can_delete_files": False, "can_upload": True, "max_files_size": 5000000000},
-             "tester2": {"password": "$5$rounds=535000$m5aFKTEJnaPBqB3c$ZAhJFsszVZD.WJuDvwORa.KgRN5CXlwvVevfl/00UFC",
-                        "have_private_space": True, "can_delete_files": True, "can_upload": True, "max_files_size": 5000000000}}
+    CURRENT_DIR = Config.CURRENT_DIR
+
+    with open(f"{CURRENT_DIR}/users/users.json", "r") as accounts:
+        users = json.loads(accounts.read())
