@@ -53,7 +53,7 @@ def private():
         have_private_space = flask_login.current_user.have_private_space
 
         return render_template("private.html", files=files, max_size=max_size, current_size=current_size,
-                               can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space)
+                                have_private_space=have_private_space)
     else:
         return redirect(url_for("content.home"))
 
@@ -63,18 +63,15 @@ def private():
 def upload_view():
     can_upload = flask_login.current_user.can_upload
 
-    if can_upload:
-        files = os.listdir(FILES_LOCATION)
+    files = os.listdir(FILES_LOCATION)
 
-        current_size = f"{str(round(get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
-        max_size = f"{MAX_SHARED_FILES_SIZE / 1000000000} GB"
+    current_size = f"{str(round(get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
+    max_size = f"{MAX_SHARED_FILES_SIZE / 1000000000} GB"
 
-        have_private_space = flask_login.current_user.have_private_space
+    have_private_space = flask_login.current_user.have_private_space
 
-        return render_template("upload.html", files=files, max_size=max_size, current_size=current_size,
-                                   have_private_space=have_private_space)
-    else:
-        return redirect(url_for("content.home"))
+    return render_template("upload.html", files=files, max_size=max_size, current_size=current_size,
+                               have_private_space=have_private_space, can_upload=can_upload)
 
 
 @content_.route("/main/upload", methods=["POST"])
@@ -127,21 +124,20 @@ def upload():
             have_private_space = flask_login.current_user.have_private_space
 
             return render_template("private.html", files=files, max_size=max_size, current_size=current_size,
-                                   can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space)
+                                   have_private_space=have_private_space)
 
-        if flask_login.current_user.can_upload and flask_login.current_user.have_private_space:
-            check_dir(f"{TMP_LOCATION}{user}")
+        check_dir(f"{TMP_LOCATION}{user}")
 
-            file.save(f"{TMP_LOCATION}{user}/{file.filename}")
+        file.save(f"{TMP_LOCATION}{user}/{file.filename}")
 
-            if (os.path.getsize(f"{TMP_LOCATION}{user}/{file.filename}")) + get_current_files_size(
-                    f'{PRIVATE_FILES_LOCATION}{user}/') < MAX_SHARED_FILES_SIZE:
+        if (os.path.getsize(f"{TMP_LOCATION}{user}/{file.filename}")) + get_current_files_size(
+                f'{PRIVATE_FILES_LOCATION}{user}/') < MAX_SHARED_FILES_SIZE:
 
-                os.rename(f"{TMP_LOCATION}{user}/{file.filename}", f"{PRIVATE_FILES_LOCATION}{user}/{file.filename}")
-            else:
-                os.remove(f"{TMP_LOCATION}{user}/{file.filename}")
+            os.rename(f"{TMP_LOCATION}{user}/{file.filename}", f"{PRIVATE_FILES_LOCATION}{user}/{file.filename}")
+        else:
+            os.remove(f"{TMP_LOCATION}{user}/{file.filename}")
 
-            return redirect(url_for("content.private"))
+        return redirect(url_for("content.private"))
 
     else:
         return redirect(url_for("content.home"))
@@ -185,7 +181,7 @@ def download_private(file_name):
 @content_.route("/main/delete_private/<file_name>", methods=["GET"])
 @flask_login.login_required
 def delete_private(file_name):
-    if flask_login.current_user.can_delete_files and flask_login.current_user.have_private_space:
+    if flask_login.current_user.have_private_space:
         os.remove(f"{PRIVATE_FILES_LOCATION}{flask_login.current_user.id}/{file_name}")
 
     return redirect(url_for("content.private"))

@@ -12,11 +12,9 @@
         <div class="navbar">
             <span class="main-title">HomeDrive - Private</span>
             <form action="/logout" method="POST">
-                {% if can_upload %}
-                    <button type="button" class="upload-button">
-                        <a href="{{ url_for('content.upload_view') }}">Upload</a>
-                    </button>
-                {% endif %}
+                <button type="button" class="upload-button">
+                    <a href="{{ url_for('content.upload_view') }}">Upload</a>
+                </button>
                 <button class="logout-button" type="submit">Logout</button>
             </form>
         </div>
@@ -33,9 +31,7 @@
                         <div class="item">
                             {{file}}
                             <span class="item-buttons">
-                                {% if can_delete %}
-                                    <button class="delete-button" value="{{file}}" name="delete_file" type="submit">Delete</button>
-                                {% endif %}
+                                <button class="delete-button" value="{{file}}" name="delete_file" type="submit">Delete</button>
                                 <button class="download-button" value="{{file}}" name="download_file" type="submit">Download</button>
                             </span>
                         </div>

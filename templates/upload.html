@@ -28,8 +28,10 @@
                     <span id="file_name"></span>
                 </p>
 
-                <input type="radio" id="shared_radio" name="space" value="shared" checked="checked">
-                <label for="shared_radio">shared</label><br>
+                {% if can_upload %}
+                    <input type="radio" id="shared_radio" name="space" value="shared" checked="checked">
+                    <label for="shared_radio">shared</label><br>
+                {% endif %}
 
                 {% if have_private_space %}
                     <input type="radio" id="private_radio" name="space" value="private">
