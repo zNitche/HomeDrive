@@ -4,6 +4,7 @@ import flask_login
 import os
 from Utils import get_current_files_size, check_dir
 from Permissions import max_private_files_size
+import shutil
 
 
 MAX_UPLOAD_SIZE = app.config["MAX_UPLOAD_SIZE"]
@@ -102,7 +103,10 @@ def upload():
             file.save(f"{TMP_LOCATION}shared/{file.filename}")
 
             if (os.path.getsize(f"{TMP_LOCATION}shared/{file.filename}")) + get_current_files_size(FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
-                os.rename(f"{TMP_LOCATION}shared/{file.filename}", f"{FILES_LOCATION}{file.filename}")
+                #Handle cross-devide link in docker
+                shutil.copy(f"{TMP_LOCATION}shared/{file.filename}", f"{FILES_LOCATION}{file.filename}")
+                os.remove(f"{TMP_LOCATION}shared/{file.filename}")
+                #os.rename(f"{TMP_LOCATION}shared/{file.filename}", f"{FILES_LOCATION}{file.filename}")
             else:
                 os.remove(f"{TMP_LOCATION}shared/{file.filename}")
 
@@ -133,7 +137,10 @@ def upload():
         if (os.path.getsize(f"{TMP_LOCATION}{user}/{file.filename}")) + get_current_files_size(
                 f'{PRIVATE_FILES_LOCATION}{user}/') < MAX_SHARED_FILES_SIZE:
 
-            os.rename(f"{TMP_LOCATION}{user}/{file.filename}", f"{PRIVATE_FILES_LOCATION}{user}/{file.filename}")
+            # Handle cross-devide link in docker
+            shutil.copy(f"{TMP_LOCATION}{user}/{file.filename}", f"{PRIVATE_FILES_LOCATION}{user}/{file.filename}")
+            os.remove(f"{TMP_LOCATION}{user}/{file.filename}")
+            #os.rename(f"{TMP_LOCATION}{user}/{file.filename}", f"{PRIVATE_FILES_LOCATION}{user}/{file.filename}")
         else:
             os.remove(f"{TMP_LOCATION}{user}/{file.filename}")
 
