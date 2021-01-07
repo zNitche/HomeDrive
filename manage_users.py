@@ -34,6 +34,7 @@ def add_user(user_name, password, can_upload, can_delete, have_private_space, pr
                        "can_delete_files": can_delete, "can_upload": can_upload, "max_files_size": private_space_size}
 
     save_to_json(users)
+    os.mkdir(f"{Config.PRIVATE_FILES_LOCATION}{user_name}")
 
     return 1
 
@@ -45,6 +46,7 @@ def delete_user(user_name):
         return 0
 
     del users[user_name]
+    os.system(f"rm -rf {Config.PRIVATE_FILES_LOCATION}{user_name}")
 
     save_to_json(users)
 
@@ -69,6 +71,8 @@ def main():
     choice = int(input("> "))
 
     if choice == 1:
+        private_space_size = 0
+
         os.system("clear")
         print("---Add user---")
 
@@ -87,9 +91,9 @@ def main():
         print("Have private space ? true/false: ")
         have_private_space = input("> ")
 
-        if have_private_space:
+        if have_private_space == "true":
             print("Private space size (in bytes 5000000000 = 5 GB) : ")
-            private_space_size = input("> ")
+            private_space_size = int(input("> "))
 
         check = add_user(user_name, password, can_upload, can_delete, have_private_space, private_space_size)
 
