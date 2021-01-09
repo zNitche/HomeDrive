@@ -83,15 +83,15 @@ def main():
         password = input("> ")
 
         print("Can upload files ? true/false: ")
-        can_upload = input("> ")
+        can_upload = bool(input("> "))
 
         print("Can delete files ? true/false: ")
-        can_delete = input("> ")
+        can_delete = bool(input("> "))
 
         print("Have private space ? true/false: ")
-        have_private_space = input("> ")
+        have_private_space = bool(input("> "))
 
-        if have_private_space == "true":
+        if str(have_private_space) == "true":
             print("Private space size (in bytes 5000000000 = 5 GB) : ")
             private_space_size = int(input("> "))
 
