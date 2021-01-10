@@ -60,6 +60,13 @@ def show_users():
         print(user_name)
 
 
+def conv_to_bool(s):
+    if s == "true":
+        return True
+    elif s == "false":
+        return False
+
+
 def main():
     print("---HomeDrive---")
     print("Users Manager. Choose what do you want to do: ")
@@ -83,15 +90,18 @@ def main():
         password = input("> ")
 
         print("Can upload files ? true/false: ")
-        can_upload = bool(input("> "))
+        can_upload = input("> ")
+        can_upload = conv_to_bool(can_upload)
 
         print("Can delete files ? true/false: ")
-        can_delete = bool(input("> "))
+        can_delete = input("> ")
+        can_delete = conv_to_bool(can_delete)
 
         print("Have private space ? true/false: ")
-        have_private_space = bool(input("> "))
+        have_private_space = input("> ")
+        have_private_space = conv_to_bool(have_private_space)
 
-        if str(have_private_space) == "true":
+        if have_private_space:
             print("Private space size (in bytes 5000000000 = 5 GB) : ")
             private_space_size = int(input("> "))
 
