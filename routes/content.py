@@ -98,12 +98,20 @@ def upload():
                                    can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space)
 
         if flask_login.current_user.can_upload:
-            file.save(f"{TMP_LOCATION}shared/{file.filename}")
+            #file.save(f"{TMP_LOCATION}shared/{file.filename}")
+            with open(f"{TMP_LOCATION}shared/{file.filename}", "wb") as data:
+                while True:
+                    file_chunk = file.stream.read(4096)
+                    if len(file_chunk) <= 0:
+                        break
+
+                    data.write(file_chunk)
 
             if (os.path.getsize(f"{TMP_LOCATION}shared/{file.filename}")) + get_current_files_size(FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
                 #Handle cross-devide link in docker
                 shutil.copy(f"{TMP_LOCATION}shared/{file.filename}", f"{FILES_LOCATION}{file.filename}")
                 os.remove(f"{TMP_LOCATION}shared/{file.filename}")
+
                 #os.rename(f"{TMP_LOCATION}shared/{file.filename}", f"{FILES_LOCATION}{file.filename}")
             else:
                 os.remove(f"{TMP_LOCATION}shared/{file.filename}")
@@ -128,7 +136,14 @@ def upload():
 
         check_dir(f"{TMP_LOCATION}{user}")
 
-        file.save(f"{TMP_LOCATION}{user}/{file.filename}")
+        #file.save(f"{TMP_LOCATION}{user}/{file.filename}")
+        with open(f"{TMP_LOCATION}{user}/{file.filename}", "wb") as data:
+            while True:
+                file_chunk = file.stream.read(4096)
+                if len(file_chunk) <= 0:
+                    break
+
+                data.write(file_chunk)
 
         if (os.path.getsize(f"{TMP_LOCATION}{user}/{file.filename}")) + get_current_files_size(
                 f'{PRIVATE_FILES_LOCATION}{user}/') < MAX_SHARED_FILES_SIZE:
