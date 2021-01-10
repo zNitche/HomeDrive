@@ -121,8 +121,6 @@ def upload():
             current_size = f"{str(round(get_current_files_size(f'{PRIVATE_FILES_LOCATION}{user}/') / 1000000000, 2))} GB"
             max_size = f"{max_private_files_size(user) / 1000000000} GB"
 
-            can_delete = flask_login.current_user.can_delete_files
-            can_upload = flask_login.current_user.can_upload
             have_private_space = flask_login.current_user.have_private_space
 
             return render_template("private.html", files=files, max_size=max_size, current_size=current_size,
