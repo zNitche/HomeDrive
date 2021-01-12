@@ -1,52 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 
-    <title>HomeDrive</title>
-</head>
-<body>
-    <div class="container">
-        <div class="navbar">
-            <span class="main-title">HomeDrive</span>
-            <form action="/logout" method="POST">
-                {% if can_upload %}
-                    <button type="button" class="upload-button">
-                        <a href="{{ url_for('content.upload_view') }}">Upload</a>
-                    </button>
+        <title>HomeDrive</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="navbar">
+                <span class="main-title">HomeDrive</span>
+                <form action="/logout" method="POST">
+                    {% if can_upload %}
+                        <button type="button" class="upload-button">
+                            <a href="{{ url_for('content.upload_view') }}">Upload</a>
+                        </button>
+                    {% endif %}
+                    <button class="logout-button" type="submit">Logout</button>
+                </form>
+            </div>
+            <div class="mode-panel">
+                <a href="{{ url_for('content.home') }}">Shared</a>
+                {% if have_private_space %}
+                    <a href="{{ url_for('content.private') }}">Private</a>
                 {% endif %}
-                <button class="logout-button" type="submit">Logout</button>
-            </form>
+            </div>
+            <div class="main-container">
+                <form method="GET" action="/main/operations" enctype="multipart/form-data">
+                    <p>
+                        {%for file in files%}
+                            <div class="item">
+                                {{file}}
+                                <span class="item-buttons">
+                                    {% if can_delete %}
+                                        <button class="delete-button" value="{{file}}" name="delete_file" type="submit">Delete</button>
+                                    {% endif %}
+                                    <button class="download-button" value="{{file}}" name="download_file" type="submit">Download</button>
+                                </span>
+                            </div>
+                            {%endfor%}
+                        </ul>
+                    </p>
+                </form>
+            </div>
+            <div class="footer">
+                {{current_size}} / {{max_size}}
+            </div>
         </div>
-        <div class="mode-panel">
-            <a href="{{ url_for('content.home') }}">Shared</a>
-            {% if have_private_space %}
-                <a href="{{ url_for('content.private') }}">Private</a>
-            {% endif %}
-        </div>
-        <div class="main-container">
-            <form method="GET" action="/main/operations" enctype="multipart/form-data">
-                <p>
-                    {%for file in files%}
-                        <div class="item">
-                            {{file}}
-                            <span class="item-buttons">
-                                {% if can_delete %}
-                                    <button class="delete-button" value="{{file}}" name="delete_file" type="submit">Delete</button>
-                                {% endif %}
-                                <button class="download-button" value="{{file}}" name="download_file" type="submit">Download</button>
-                            </span>
-                        </div>
-                        {%endfor%}
-                    </ul>
-                </p>
-            </form>
-        </div>
-        <div class="footer">
-            {{current_size}} / {{max_size}}
-        </div>
-    </div>
-</body>
+    </body>
 </html>

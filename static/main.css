@@ -124,6 +124,14 @@ input.login-form-input {
     width: 100%;
 }
 
+.upload-container .finalize-upload-button {
+    display: block;
+    background-color: #FFE400;
+    color: white;
+    border-radius: 10px;
+    width: 100%;
+}
+
 .mode-panel {
     padding: 10px;
     color: #FFE400;
@@ -203,6 +211,10 @@ input.login-form-input {
 }
 
 .upload-file-button:hover {
+    background-color: #e0c800;
+}
+
+.finalize-upload-button:hover {
     background-color: #e0c800;
 }
 

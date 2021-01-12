@@ -1,48 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 
-    <title>HomeDrive - Private</title>
-</head>
-<body>
-    <div class="container">
-        <div class="navbar">
-            <span class="main-title">HomeDrive - Private</span>
-            <form action="/logout" method="POST">
-                <button type="button" class="upload-button">
-                    <a href="{{ url_for('content.upload_view') }}">Upload</a>
-                </button>
-                <button class="logout-button" type="submit">Logout</button>
-            </form>
+        <title>HomeDrive - Private</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="navbar">
+                <span class="main-title">HomeDrive - Private</span>
+                <form action="/logout" method="POST">
+                    <button type="button" class="upload-button">
+                        <a href="{{ url_for('content.upload_view') }}">Upload</a>
+                    </button>
+                    <button class="logout-button" type="submit">Logout</button>
+                </form>
+            </div>
+            <div class="mode-panel">
+                <a href="{{ url_for('content.home') }}">Shared</a>
+                {% if have_private_space %}
+                    <a href="{{ url_for('content.private') }}">Private</a>
+                {% endif %}
+            </div>
+            <div class="main-container">
+                <form method="GET" action="/main/operations_private" enctype="multipart/form-data">
+                    <p>
+                        {%for file in files%}
+                            <div class="item">
+                                {{file}}
+                                <span class="item-buttons">
+                                    <button class="delete-button" value="{{file}}" name="delete_file" type="submit">Delete</button>
+                                    <button class="download-button" value="{{file}}" name="download_file" type="submit">Download</button>
+                                </span>
+                            </div>
+                            {%endfor%}
+                        </ul>
+                    </p>
+                </form>
+            </div>
+            <div class="footer">
+                {{current_size}} / {{max_size}}
+            </div>
         </div>
-        <div class="mode-panel">
-            <a href="{{ url_for('content.home') }}">Shared</a>
-            {% if have_private_space %}
-                <a href="{{ url_for('content.private') }}">Private</a>
-            {% endif %}
-        </div>
-        <div class="main-container">
-            <form method="GET" action="/main/operations_private" enctype="multipart/form-data">
-                <p>
-                    {%for file in files%}
-                        <div class="item">
-                            {{file}}
-                            <span class="item-buttons">
-                                <button class="delete-button" value="{{file}}" name="delete_file" type="submit">Delete</button>
-                                <button class="download-button" value="{{file}}" name="download_file" type="submit">Download</button>
-                            </span>
-                        </div>
-                        {%endfor%}
-                    </ul>
-                </p>
-            </form>
-        </div>
-        <div class="footer">
-            {{current_size}} / {{max_size}}
-        </div>
-    </div>
-</body>
+    </body>
 </html>

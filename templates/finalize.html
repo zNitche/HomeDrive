@@ -21,21 +21,30 @@
             </div>
             <div class="main-container upload-container">
                 <div class="upload-container">
-                    <form action="/main/upload" method="POST" enctype="multipart/form-data">
-                        <label for="file-upload" class="upload-file-label">Choose File</label>
-                        <input type="file" class="upload-file" value="File to be uploaded" id="file-upload" name="file-upload" onchange="getFileName(this);" />
-                        <p class="file-name">
-                            <span id="file_name"></span>
-                        </p>
+                    <form action="/main/upload/finalize/move" method="POST" enctype="multipart/form-data">
+
                         <p>
-                            <button id="upload_button" class="upload-file-button" type="submit">Upload</button>
+                            <input type="text" id="file_name" name="file_name" placeholder="file name">
+                        </p>
+
+                        {% if can_upload %}
+                            <input type="radio" id="shared_radio" name="space" value="shared" checked="checked">
+                            <label for="shared_radio">shared</label><br>
+                        {% endif %}
+
+                        {% if have_private_space %}
+                            <input type="radio" id="private_radio" name="space" value="private" checked="checked">
+                            <label for="private_radio">private</label><br><br>
+                        {% endif %}
+
+                        <p>
+                            <button id="finalize_button" class="finalize-upload-button" type="submit">Finalize Upload</button>
                         </p>
                     </form>
                     <p>{{message}}</p>
                 </div>
             </div>
             <div class="footer">
-                {{current_size}} / {{max_size}}
             </div>
         </div>
     </body>

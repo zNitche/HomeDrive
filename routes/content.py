@@ -5,6 +5,7 @@ import os
 from Utils import get_current_files_size, check_dir
 from Permissions import max_private_files_size
 import shutil
+import  sys
 
 
 MAX_UPLOAD_SIZE = app.config["MAX_UPLOAD_SIZE"]
@@ -73,84 +74,81 @@ def upload_view():
                                have_private_space=have_private_space, can_upload=can_upload)
 
 
+@content_.route("/main/upload/finalize/move", methods=["POST", "GET"])
+@flask_login.login_required
+def move_upload():
+    user = flask_login.current_user
+
+    if user.can_upload or user.have_private_space:
+        if os.path.exists(f"{TMP_LOCATION}{user.id}/tmp_file"):
+            file_name = request.form["file_name"]
+            space = request.form["space"]
+
+            if user.can_upload and space == "shared":
+                if (os.path.getsize(f"{TMP_LOCATION}{user.id}/tmp_file")) + get_current_files_size(
+                        FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
+                    # Handle cross-devide link in docker
+                    shutil.copy(f"{TMP_LOCATION}{user.id}/tmp_file", f"{FILES_LOCATION}{file_name}")
+                    os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
+
+                    return redirect(url_for("content.home"))
+                else:
+                    os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
+
+                    return redirect(url_for("content.home"))
+
+            if user.have_private_space and space == "private":
+                if (os.path.getsize(f"{TMP_LOCATION}{user.id}/tmp_file")) + get_current_files_size(
+                        FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
+                    # Handle cross-devide link in docker
+                    shutil.copy(f"{TMP_LOCATION}{user.id}/tmp_file", f"{PRIVATE_FILES_LOCATION}{user.id}/{file_name}")
+                    os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
+
+                    return redirect(url_for("content.private"))
+                else:
+                    os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
+
+                    return redirect(url_for("content.home"))
+
+
+@content_.route("/main/upload/finalize", methods=["POST", "GET"])
+@flask_login.login_required
+def finalize_upload():
+    user = flask_login.current_user
+
+    if user.can_upload or user.have_private_space:
+        if os.path.exists(f"{TMP_LOCATION}{user.id}/tmp_file"):
+            can_upload = user.can_upload
+
+            have_private_space = user.have_private_space
+
+            return render_template("finalize.html", have_private_space=have_private_space, can_upload=can_upload)
+        else:
+            return redirect(url_for("content.home"))
+    else:
+        return redirect(url_for("content.home"))
+
+
 @content_.route("/main/upload", methods=["POST"])
 @flask_login.login_required
 def upload():
-    file = request.files["file-upload"]
+    user = flask_login.current_user
 
-    if file.filename == "":
-        return redirect(url_for("content.home"))
+    if user.can_upload or user.have_private_space:
+        check_dir(f"{TMP_LOCATION}{user.id}")
 
-    space = request.form["space"]
+        if os.path.exists(f"{TMP_LOCATION}{user.id}/tmp_file"):
+            os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
 
-    if space == "shared":
-        if file.filename in os.listdir(FILES_LOCATION):
-            files = os.listdir(FILES_LOCATION)
-
-            current_size = f"{str(round(get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
-            max_size = f"{MAX_SHARED_FILES_SIZE / 1000000000} GB"
-
-            can_delete = flask_login.current_user.can_delete_files
-            can_upload = flask_login.current_user.can_upload
-            have_private_space = flask_login.current_user.have_private_space
-
-            return render_template("index.html", files=files, max_size=max_size, current_size=current_size,
-                                   can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space)
-
-        if flask_login.current_user.can_upload:
-            with open(f"{TMP_LOCATION}shared/{file.filename}", "wb") as data:
-                while True:
-                    file_chunk = file.stream.read(4096)
-                    if len(file_chunk) <= 0:
-                        break
-
-                    data.write(file_chunk)
-
-            if (os.path.getsize(f"{TMP_LOCATION}shared/{file.filename}")) + get_current_files_size(FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
-                #Handle cross-devide link in docker
-                shutil.copy(f"{TMP_LOCATION}shared/{file.filename}", f"{FILES_LOCATION}{file.filename}")
-                os.remove(f"{TMP_LOCATION}shared/{file.filename}")
-            else:
-                os.remove(f"{TMP_LOCATION}shared/{file.filename}")
-
-        return redirect(url_for("content.home"))
-
-    elif space == "private" and flask_login.current_user.have_private_space:
-        user = flask_login.current_user.id
-
-        check_dir(f"{PRIVATE_FILES_LOCATION}{user}")
-
-        if file.filename in os.listdir(f"{PRIVATE_FILES_LOCATION}{user}"):
-            files = os.listdir(f"{PRIVATE_FILES_LOCATION}{flask_login.current_user.id}")
-
-            current_size = f"{str(round(get_current_files_size(f'{PRIVATE_FILES_LOCATION}{user}/') / 1000000000, 2))} GB"
-            max_size = f"{max_private_files_size(user) / 1000000000} GB"
-
-            have_private_space = flask_login.current_user.have_private_space
-
-            return render_template("private.html", files=files, max_size=max_size, current_size=current_size,
-                                   have_private_space=have_private_space)
-
-        check_dir(f"{TMP_LOCATION}{user}")
-
-        with open(f"{TMP_LOCATION}{user}/{file.filename}", "wb") as data:
+        with open(f"{TMP_LOCATION}{user.id}/tmp_file", "wb") as data:
             while True:
-                file_chunk = file.stream.read(4096)
+                file_chunk = request.stream.read(4096)
                 if len(file_chunk) <= 0:
                     break
 
                 data.write(file_chunk)
 
-        if (os.path.getsize(f"{TMP_LOCATION}{user}/{file.filename}")) + get_current_files_size(
-                f'{PRIVATE_FILES_LOCATION}{user}/') < MAX_SHARED_FILES_SIZE:
-
-            # Handle cross-devide link in docker
-            shutil.copy(f"{TMP_LOCATION}{user}/{file.filename}", f"{PRIVATE_FILES_LOCATION}{user}/{file.filename}")
-            os.remove(f"{TMP_LOCATION}{user}/{file.filename}")
-        else:
-            os.remove(f"{TMP_LOCATION}{user}/{file.filename}")
-
-        return redirect(url_for("content.private"))
+        return redirect(url_for("content.finalize_upload"))
 
     else:
         return redirect(url_for("content.home"))
