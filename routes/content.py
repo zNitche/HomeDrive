@@ -5,7 +5,6 @@ import os
 from Utils import get_current_files_size, check_dir
 from Permissions import max_private_files_size
 import shutil
-import  sys
 
 
 MAX_UPLOAD_SIZE = app.config["MAX_UPLOAD_SIZE"]
