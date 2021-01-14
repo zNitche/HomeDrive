@@ -87,7 +87,14 @@ def move_upload():
                 if (os.path.getsize(f"{TMP_LOCATION}{user.id}/tmp_file")) + get_current_files_size(
                         FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
                     # Handle cross-devide link in docker
-                    shutil.copy(f"{TMP_LOCATION}{user.id}/tmp_file", f"{FILES_LOCATION}{file_name}")
+                    file_source = open(f"{TMP_LOCATION}{user.id}/tmp_file", "rb")
+                    file_dest = open(f"{FILES_LOCATION}{file_name}", "wb")
+
+                    shutil.copyfileobj(file_source, file_dest, 4096)
+
+                    file_source.close()
+                    file_dest.close()
+
                     os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
 
                     return redirect(url_for("content.home"))
@@ -99,8 +106,15 @@ def move_upload():
             if user.have_private_space and space == "private":
                 if (os.path.getsize(f"{TMP_LOCATION}{user.id}/tmp_file")) + get_current_files_size(
                         FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
-                    # Handle cross-devide link in docker
-                    shutil.copy(f"{TMP_LOCATION}{user.id}/tmp_file", f"{PRIVATE_FILES_LOCATION}{user.id}/{file_name}")
+                    # Handle cross-devide link in dockr
+                    file_source = open(f"{TMP_LOCATION}{user.id}/tmp_file", "rb")
+                    file_dest = open(f"{PRIVATE_FILES_LOCATION}{user.id}/{file_name}", "wb")
+
+                    shutil.copyfileobj(file_source, file_dest, 4096)
+
+                    file_source.close()
+                    file_dest.close()
+
                     os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
 
                     return redirect(url_for("content.private"))
