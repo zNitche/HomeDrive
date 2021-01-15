@@ -86,18 +86,23 @@ def move_upload():
             if user.can_upload and space == "shared":
                 if (os.path.getsize(f"{TMP_LOCATION}{user.id}/tmp_file")) + get_current_files_size(
                         FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
-                    # Handle cross-devide link in docker
-                    file_source = open(f"{TMP_LOCATION}{user.id}/tmp_file", "rb")
-                    file_dest = open(f"{FILES_LOCATION}{file_name}", "wb")
+                    if not os.path.exists(f"{FILES_LOCATION}{file_name}"):
+                        # Handle cross-devide link in docker
+                        file_source = open(f"{TMP_LOCATION}{user.id}/tmp_file", "rb")
+                        file_dest = open(f"{FILES_LOCATION}{file_name}", "wb")
 
-                    shutil.copyfileobj(file_source, file_dest, 4096)
+                        shutil.copyfileobj(file_source, file_dest, 4096)
 
-                    file_source.close()
-                    file_dest.close()
+                        file_source.close()
+                        file_dest.close()
 
-                    os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
+                        os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
 
-                    return redirect(url_for("content.home"))
+                        return redirect(url_for("content.home"))
+                    else:
+                        message = "File already exists, choose different name"
+                        return render_template("finalize.html", have_private_space=user.have_private_space,
+                                               can_upload=user.can_upload, message=message)
                 else:
                     os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
 
@@ -106,18 +111,23 @@ def move_upload():
             if user.have_private_space and space == "private":
                 if (os.path.getsize(f"{TMP_LOCATION}{user.id}/tmp_file")) + get_current_files_size(
                         FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
-                    # Handle cross-devide link in dockr
-                    file_source = open(f"{TMP_LOCATION}{user.id}/tmp_file", "rb")
-                    file_dest = open(f"{PRIVATE_FILES_LOCATION}{user.id}/{file_name}", "wb")
+                    if not os.path.exists(f"{PRIVATE_FILES_LOCATION}{user.id}/{file_name}"):
+                        # Handle cross-devide link in dockr
+                        file_source = open(f"{TMP_LOCATION}{user.id}/tmp_file", "rb")
+                        file_dest = open(f"{PRIVATE_FILES_LOCATION}{user.id}/{file_name}", "wb")
 
-                    shutil.copyfileobj(file_source, file_dest, 4096)
+                        shutil.copyfileobj(file_source, file_dest, 4096)
 
-                    file_source.close()
-                    file_dest.close()
+                        file_source.close()
+                        file_dest.close()
 
-                    os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
+                        os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
 
-                    return redirect(url_for("content.private"))
+                        return redirect(url_for("content.private"))
+                    else:
+                        message = "File already exists, choose different name"
+                        return render_template("finalize.html", have_private_space=user.have_private_space,
+                                                       can_upload=user.can_upload, message=message)
                 else:
                     os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
 
@@ -135,7 +145,8 @@ def finalize_upload():
 
             have_private_space = user.have_private_space
 
-            return render_template("finalize.html", have_private_space=have_private_space, can_upload=can_upload)
+            return render_template("finalize.html", have_private_space=have_private_space, can_upload=can_upload,
+                                   message="")
         else:
             return redirect(url_for("content.home"))
     else:
@@ -215,9 +226,11 @@ def delete_private(file_name):
 @flask_login.login_required
 def download(file_name):
     if file_name.endswith(".pdf") or file_name.endswith(".jpg") or file_name.endswith(".png"):
-        return send_file(f'{FILES_LOCATION}{file_name}', as_attachment=False, attachment_filename=f'{file_name}', cache_timeout=0)
+        return send_file(f'{FILES_LOCATION}{file_name}', as_attachment=False, attachment_filename=f'{file_name}',
+                         cache_timeout=0)
     else:
-        return send_file(f'{FILES_LOCATION}{file_name}', as_attachment=True, attachment_filename=f'{file_name}', cache_timeout=0)
+        return send_file(f'{FILES_LOCATION}{file_name}', as_attachment=True, attachment_filename=f'{file_name}',
+                         cache_timeout=0)
 
 
 @content_.route("/main/delete/<file_name>", methods=["GET"])
