@@ -4,10 +4,18 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+        <script src="{{ url_for('static', filename='main.js') }}"></script>
 
         <title>HomeDrive</title>
     </head>
     <body>
+        <div class="delete-modal" id="delete-modal">
+            <p id="delete-file-name"></p>
+            <form method="GET" action="/main/operations" enctype="multipart/form-data">
+                <button class="modal-delete-button" id="delete-modal-button" name="delete_file" type="submit">Yes</button>
+                <button class="modal-close-button" onclick="closeDeleteModal();" type="button">No</button>
+            </form>
+        </div>
         <div class="container">
             <div class="navbar">
                 <span class="main-title">HomeDrive</span>
@@ -34,9 +42,11 @@
                                 {{file}}
                                 <span class="item-buttons">
                                     {% if can_delete %}
-                                        <button class="delete-button" value="{{file}}" name="delete_file" type="submit">Delete</button>
+                                        <button id="delete-button" class="delete-button" onclick="showDeleteModal(this.value);"
+                                                value="{{file}}" name="delete_file_modal" type="button">Delete</button>
                                     {% endif %}
-                                    <button class="download-button" value="{{file}}" name="download_file" type="submit">Download</button>
+                                    <button id="download-button" class="download-button" value="{{file}}"
+                                            name="download_file" type="submit">Download</button>
                                 </span>
                             </div>
                             {%endfor%}
