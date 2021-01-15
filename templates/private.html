@@ -34,18 +34,16 @@
             </div>
             <div class="main-container">
                 <form method="GET" action="/main/operations_private" enctype="multipart/form-data">
-                    <p>
-                        {%for file in files%}
-                            <div class="item">
-                                {{file}}
-                                <span class="item-buttons">
-                                    <button id="delete-button" class="delete-button" onclick="showDeleteModal(this.value);"
-                                                value="{{file}}" name="delete_file_modal" type="button">Delete</button>
-                                    <button class="download-button" value="{{file}}" name="download_file" type="submit">Download</button>
-                                </span>
-                            </div>
-                        {%endfor%}
-                    </p>
+                    {%for file in files%}
+                        <div class="item">
+                            {{file}}
+                            <span class="item-buttons">
+                                <button id="delete-button" class="delete-button" onclick="showDeleteModal(this.value);"
+                                            value="{{file}}" name="delete_file_modal" type="button">Delete</button>
+                                <button class="download-button" value="{{file}}" name="download_file" type="submit">Download</button>
+                            </span>
+                        </div>
+                    {%endfor%}
                 </form>
             </div>
             <div class="footer">
