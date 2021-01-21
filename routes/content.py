@@ -3,7 +3,7 @@ from flask import current_app as app
 import flask_login
 import os
 from Utils import get_current_files_size, check_dir
-from Permissions import max_private_files_size
+import Permissions
 import shutil
 
 
@@ -27,9 +27,11 @@ def home():
         current_size = f"{str(round(get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
         max_size = f"{MAX_SHARED_FILES_SIZE / 1000000000} GB"
 
-        can_delete = flask_login.current_user.can_delete_files
-        can_upload = flask_login.current_user.can_upload
-        have_private_space = flask_login.current_user.have_private_space
+        user_name = flask_login.current_user.id
+
+        can_delete = Permissions.can_delete(user_name)
+        can_upload = Permissions.can_upload(user_name)
+        have_private_space = Permissions.have_private_space(user_name)
 
         return render_template("index.html", files=files, max_size=max_size, current_size=current_size,
                                can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space)
@@ -41,15 +43,17 @@ def home():
 @flask_login.login_required
 def private():
     if flask_login.current_user.have_private_space:
-        user = flask_login.current_user.id
-        check_dir(f"{PRIVATE_FILES_LOCATION}{user}")
+        user_name = flask_login.current_user.id
+        check_dir(f"{PRIVATE_FILES_LOCATION}{user_name}")
 
-        files = os.listdir(f"{PRIVATE_FILES_LOCATION}{user}")
+        files = os.listdir(f"{PRIVATE_FILES_LOCATION}{user_name}")
 
-        current_size = f"{str(round(get_current_files_size(f'{PRIVATE_FILES_LOCATION}{user}/') / 1000000000, 2))} GB"
-        max_size = f"{max_private_files_size(user) / 1000000000} GB"
+        max_private_size = Permissions.max_private_files_size(user_name)
 
-        have_private_space = flask_login.current_user.have_private_space
+        current_size = f"{str(round(get_current_files_size(f'{PRIVATE_FILES_LOCATION}{user_name}/') / 1000000000, 2))} GB"
+        max_size = f"{max_private_size / 1000000000} GB"
+
+        have_private_space = Permissions.have_private_space(user_name)
 
         return render_template("private.html", files=files, max_size=max_size, current_size=current_size,
                                 have_private_space=have_private_space)
@@ -60,14 +64,15 @@ def private():
 @content_.route("/upload")
 @flask_login.login_required
 def upload_view():
-    can_upload = flask_login.current_user.can_upload
+    user_name = flask_login.current_user.id
+
+    have_private_space = Permissions.have_private_space(user_name)
+    can_upload = Permissions.can_upload(user_name)
 
     files = os.listdir(FILES_LOCATION)
 
     current_size = f"{str(round(get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
     max_size = f"{MAX_SHARED_FILES_SIZE / 1000000000} GB"
-
-    have_private_space = flask_login.current_user.have_private_space
 
     return render_template("upload.html", files=files, max_size=max_size, current_size=current_size,
                                have_private_space=have_private_space, can_upload=can_upload)
@@ -76,19 +81,21 @@ def upload_view():
 @content_.route("/main/upload/finalize/move", methods=["POST", "GET"])
 @flask_login.login_required
 def move_upload():
-    user = flask_login.current_user
+    user_name = flask_login.current_user.id
+    can_upload = Permissions.can_upload(user_name)
+    have_private_space = Permissions.have_private_space(user_name)
 
-    if user.can_upload or user.have_private_space:
-        if os.path.exists(f"{TMP_LOCATION}{user.id}/tmp_file"):
+    if can_upload or have_private_space:
+        if os.path.exists(f"{TMP_LOCATION}{user_name}/tmp_file"):
             file_name = request.form["file_name"]
             space = request.form["space"]
 
-            if user.can_upload and space == "shared":
-                if (os.path.getsize(f"{TMP_LOCATION}{user.id}/tmp_file")) + get_current_files_size(
+            if can_upload and space == "shared":
+                if (os.path.getsize(f"{TMP_LOCATION}{user_name}/tmp_file")) + get_current_files_size(
                         FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
                     if not os.path.exists(f"{FILES_LOCATION}{file_name}"):
                         # Handle cross-devide link in docker
-                        file_source = open(f"{TMP_LOCATION}{user.id}/tmp_file", "rb")
+                        file_source = open(f"{TMP_LOCATION}{user_name}/tmp_file", "rb")
                         file_dest = open(f"{FILES_LOCATION}{file_name}", "wb")
 
                         shutil.copyfileobj(file_source, file_dest, 4096)
@@ -96,40 +103,40 @@ def move_upload():
                         file_source.close()
                         file_dest.close()
 
-                        os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
+                        os.remove(f"{TMP_LOCATION}{user_name}/tmp_file")
 
                         return redirect(url_for("content.home"))
                     else:
                         message = "File already exists, choose different name"
-                        return render_template("finalize.html", have_private_space=user.have_private_space,
-                                               can_upload=user.can_upload, message=message)
+                        return render_template("finalize.html", have_private_space=have_private_space,
+                                               can_upload=can_upload, message=message)
                 else:
-                    os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
+                    os.remove(f"{TMP_LOCATION}{user_name}/tmp_file")
 
                     return redirect(url_for("content.home"))
 
-            if user.have_private_space and space == "private":
-                if (os.path.getsize(f"{TMP_LOCATION}{user.id}/tmp_file")) + get_current_files_size(
+            if have_private_space and space == "private":
+                if (os.path.getsize(f"{TMP_LOCATION}{user_name}/tmp_file")) + get_current_files_size(
                         FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
-                    if not os.path.exists(f"{PRIVATE_FILES_LOCATION}{user.id}/{file_name}"):
+                    if not os.path.exists(f"{PRIVATE_FILES_LOCATION}{user_name}/{file_name}"):
                         # Handle cross-devide link in dockr
-                        file_source = open(f"{TMP_LOCATION}{user.id}/tmp_file", "rb")
-                        file_dest = open(f"{PRIVATE_FILES_LOCATION}{user.id}/{file_name}", "wb")
+                        file_source = open(f"{TMP_LOCATION}{user_name}/tmp_file", "rb")
+                        file_dest = open(f"{PRIVATE_FILES_LOCATION}{user_name}/{file_name}", "wb")
 
                         shutil.copyfileobj(file_source, file_dest, 4096)
 
                         file_source.close()
                         file_dest.close()
 
-                        os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
+                        os.remove(f"{TMP_LOCATION}{user_name}/tmp_file")
 
                         return redirect(url_for("content.private"))
                     else:
                         message = "File already exists, choose different name"
-                        return render_template("finalize.html", have_private_space=user.have_private_space,
-                                                       can_upload=user.can_upload, message=message)
+                        return render_template("finalize.html", have_private_space=have_private_space,
+                                                       can_upload=can_upload, message=message)
                 else:
-                    os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
+                    os.remove(f"{TMP_LOCATION}{user_name}/tmp_file")
 
                     return redirect(url_for("content.home"))
 
@@ -137,14 +144,12 @@ def move_upload():
 @content_.route("/main/upload/finalize", methods=["POST", "GET"])
 @flask_login.login_required
 def finalize_upload():
-    user = flask_login.current_user
+    user_name = flask_login.current_user.id
+    can_upload = Permissions.can_upload(user_name)
+    have_private_space = Permissions.have_private_space(user_name)
 
-    if user.can_upload or user.have_private_space:
-        if os.path.exists(f"{TMP_LOCATION}{user.id}/tmp_file"):
-            can_upload = user.can_upload
-
-            have_private_space = user.have_private_space
-
+    if can_upload or have_private_space:
+        if os.path.exists(f"{TMP_LOCATION}{user_name}/tmp_file"):
             return render_template("finalize.html", have_private_space=have_private_space, can_upload=can_upload,
                                    message="")
         else:
@@ -156,15 +161,17 @@ def finalize_upload():
 @content_.route("/main/upload", methods=["POST"])
 @flask_login.login_required
 def upload():
-    user = flask_login.current_user
+    user_name = flask_login.current_user.id
+    can_upload = Permissions.can_upload(user_name)
+    have_private_space = Permissions.have_private_space(user_name)
 
-    if user.can_upload or user.have_private_space:
-        check_dir(f"{TMP_LOCATION}{user.id}")
+    if can_upload or have_private_space:
+        check_dir(f"{TMP_LOCATION}{user_name}")
 
-        if os.path.exists(f"{TMP_LOCATION}{user.id}/tmp_file"):
-            os.remove(f"{TMP_LOCATION}{user.id}/tmp_file")
+        if os.path.exists(f"{TMP_LOCATION}{user_name}/tmp_file"):
+            os.remove(f"{TMP_LOCATION}{user_name}/tmp_file")
 
-        with open(f"{TMP_LOCATION}{user.id}/tmp_file", "wb") as data:
+        with open(f"{TMP_LOCATION}{user_name}/tmp_file", "wb") as data:
             while True:
                 file_chunk = request.stream.read(4096)
                 if len(file_chunk) <= 0:
@@ -192,7 +199,10 @@ def operations():
 @content_.route("/main/operations_private", methods=["GET", "POST"])
 @flask_login.login_required
 def operations_private():
-    if flask_login.current_user.have_private_space:
+    user_name = flask_login.current_user.id
+    have_private_space = Permissions.have_private_space(user_name)
+
+    if have_private_space:
         if request.args.get("download_file"):
             file_name = request.args.get("download_file")
             return redirect(url_for("content.download_private", file_name=file_name))
@@ -204,8 +214,11 @@ def operations_private():
 @content_.route("/main/download_private/<file_name>", methods=["GET"])
 @flask_login.login_required
 def download_private(file_name):
-    if flask_login.current_user.have_private_space:
-        if file_name.endswith(".pdf") or file_name.endswith(".jpg") or file_name.endswith(".png"):
+    user_name = flask_login.current_user.id
+    have_private_space = Permissions.have_private_space(user_name)
+
+    if have_private_space:
+        if file_name.endswith(".pdf")  or file_name.endswith(".txt"):
             return send_file(f"{PRIVATE_FILES_LOCATION}{flask_login.current_user.id}/{file_name}",
                              as_attachment=False, attachment_filename=f'{file_name}', cache_timeout=0)
         else:
@@ -216,8 +229,11 @@ def download_private(file_name):
 @content_.route("/main/delete_private/<file_name>", methods=["GET"])
 @flask_login.login_required
 def delete_private(file_name):
-    if flask_login.current_user.have_private_space:
-        os.remove(f"{PRIVATE_FILES_LOCATION}{flask_login.current_user.id}/{file_name}")
+    user_name = flask_login.current_user.id
+    have_private_space = Permissions.have_private_space(user_name)
+
+    if have_private_space:
+        os.remove(f"{PRIVATE_FILES_LOCATION}{user_name}/{file_name}")
 
     return redirect(url_for("content.private"))
 
@@ -225,7 +241,7 @@ def delete_private(file_name):
 @content_.route("/main/download/<file_name>", methods=["GET"])
 @flask_login.login_required
 def download(file_name):
-    if file_name.endswith(".pdf") or file_name.endswith(".jpg") or file_name.endswith(".png"):
+    if file_name.endswith(".pdf")  or file_name.endswith(".txt"):
         return send_file(f'{FILES_LOCATION}{file_name}', as_attachment=False, attachment_filename=f'{file_name}',
                          cache_timeout=0)
     else:
@@ -236,7 +252,10 @@ def download(file_name):
 @content_.route("/main/delete/<file_name>", methods=["GET"])
 @flask_login.login_required
 def delete(file_name):
-    if flask_login.current_user.can_delete_files:
+    user_name = flask_login.current_user.id
+    can_delete_files = Permissions.can_delete(user_name)
+
+    if can_delete_files:
         os.remove(f"{FILES_LOCATION}{file_name}")
 
     return redirect(url_for("content.home"))

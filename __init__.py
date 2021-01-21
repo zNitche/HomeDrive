@@ -2,7 +2,7 @@ from flask import Flask
 import flask_login
 from users import User
 from users import users_accounts
-from Permissions import delete_permission, private_space_permission, can_upload_permission
+import Permissions
 
 
 def create_app():
@@ -19,7 +19,8 @@ def create_app():
         if username not in users:
             return
 
-        user = User.User(delete_permission(username), private_space_permission(username), can_upload_permission(username))
+        user = User.User(Permissions.can_delete(username), Permissions.have_private_space(username),
+                         Permissions.can_upload(username))
         user.id = username
         return user
 

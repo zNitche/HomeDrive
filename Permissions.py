@@ -1,17 +1,17 @@
 from users.users_accounts import UsersAccounts
 
 
-def delete_permission(username):
+def can_delete(username):
     users = UsersAccounts.users
     return users[username]["can_delete_files"]
 
 
-def private_space_permission(username):
+def have_private_space(username):
     users = UsersAccounts.users
     return users[username]["have_private_space"]
 
 
-def can_upload_permission(username):
+def can_upload(username):
     users = UsersAccounts.users
     return users[username]["can_upload"]
 
