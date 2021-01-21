@@ -5,6 +5,7 @@ import os
 from Utils import get_current_files_size, check_dir
 import Permissions
 import shutil
+from werkzeug.utils import secure_filename
 
 
 MAX_UPLOAD_SIZE = app.config["MAX_UPLOAD_SIZE"]
@@ -88,6 +89,8 @@ def move_upload():
     if can_upload or have_private_space:
         if os.path.exists(f"{TMP_LOCATION}{user_name}/tmp_file"):
             file_name = request.form["file_name"]
+            file_name = secure_filename(file_name)
+
             space = request.form["space"]
 
             if can_upload and space == "shared":
