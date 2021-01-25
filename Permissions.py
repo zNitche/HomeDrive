@@ -19,3 +19,8 @@ def can_upload(username):
 def max_private_files_size(username):
     users = UsersAccounts.users
     return users[username]["max_files_size"]
+
+
+def is_admin(username):
+    users = UsersAccounts.users
+    return users[username]["admin"]

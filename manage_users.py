@@ -22,7 +22,7 @@ def save_to_json(users):
         accounts.write(json.dumps(users, indent=4))
 
 
-def add_user(user_name, password, can_upload, can_delete, have_private_space, private_space_size):
+def add_user(user_name, password, can_upload, can_delete, have_private_space, private_space_size, is_admin):
 
     if user_name in load_users():
         return 0
@@ -31,7 +31,8 @@ def add_user(user_name, password, can_upload, can_delete, have_private_space, pr
     crypted_password = hash_password(password)
 
     users[user_name] = {"password": crypted_password, "have_private_space": have_private_space,
-                       "can_delete_files": can_delete, "can_upload": can_upload, "max_files_size": private_space_size}
+                       "can_delete_files": can_delete, "can_upload": can_upload, "max_files_size": private_space_size,
+                        "admin": is_admin}
 
     save_to_json(users)
     os.mkdir(f"{Config.PRIVATE_FILES_LOCATION}{user_name}")
@@ -97,6 +98,10 @@ def main():
         can_delete = input("> ")
         can_delete = conv_to_bool(can_delete)
 
+        print("Is admin ? true/false: ")
+        is_admin = input("> ")
+        is_admin = conv_to_bool(is_admin)
+
         print("Have private space ? true/false: ")
         have_private_space = input("> ")
         have_private_space = conv_to_bool(have_private_space)
@@ -105,7 +110,7 @@ def main():
             print("Private space size (in bytes 5000000000 = 5 GB) : ")
             private_space_size = int(input("> "))
 
-        check = add_user(user_name, password, can_upload, can_delete, have_private_space, private_space_size)
+        check = add_user(user_name, password, can_upload, can_delete, have_private_space, private_space_size, is_admin)
 
         if not check:
             print("User already exists")

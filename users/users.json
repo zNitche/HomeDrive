@@ -4,6 +4,7 @@
         "have_private_space": true,
         "can_delete_files": true,
         "can_upload": true,
-        "max_files_size": 5000000000
+        "max_files_size": 5000000000,
+        "admin": true
     }
 }

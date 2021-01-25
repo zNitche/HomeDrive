@@ -264,6 +264,32 @@ def delete(file_name):
     return redirect(url_for("content.home"))
 
 
+@content_.route("/admin/reboot", methods=["GET"])
+@flask_login.login_required
+def reboot():
+    user_name = flask_login.current_user.id
+
+    if Permissions.is_admin(user_name):
+        os.system("reboot")
+
+        return "Rebooting"
+    else:
+        return "Not Authorized"
+
+
+@content_.route("/admin/shutdown", methods=["GET"])
+@flask_login.login_required
+def shutdown():
+    user_name = flask_login.current_user.id
+
+    if Permissions.is_admin(user_name):
+        os.system("shutdown")
+
+        return "Shutting now"
+    else:
+        return "Not Authorized"
+
+
 @app.errorhandler(404)
 def not_found(error):
     return render_template("error.html", message=error)
