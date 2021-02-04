@@ -14,6 +14,8 @@ CURRENT_DIR = app.config["CURRENT_DIR"]
 MAX_SHARED_FILES_SIZE = app.config["MAX_SHARED_FILES_SIZE"]
 TMP_LOCATION = app.config["TMP_LOCATION"]
 PRIVATE_FILES_LOCATION = app.config["PRIVATE_FILES_LOCATION"]
+LEGACY_UPLOAD = app.config["LEGACY_UPLOAD"]
+UPLOAD_CHUNK_SIZE = app.config["UPLOAD_CHUNK_SIZE"]
 app.config['MAX_CONTENT_LENGTH'] = MAX_UPLOAD_SIZE * 1024 * 1024
 
 
@@ -174,13 +176,17 @@ def upload():
         if os.path.exists(f"{TMP_LOCATION}{user_name}/tmp_file"):
             os.remove(f"{TMP_LOCATION}{user_name}/tmp_file")
 
-        with open(f"{TMP_LOCATION}{user_name}/tmp_file", "wb") as data:
-            while True:
-                file_chunk = request.stream.read(4096)
-                if len(file_chunk) <= 0:
-                    break
+        if not LEGACY_UPLOAD:
+            with open(f"{TMP_LOCATION}{user_name}/tmp_file", "wb") as data:
+                while True:
+                    file_chunk = request.stream.read(UPLOAD_CHUNK_SIZE)
+                    if len(file_chunk) <= 0:
+                        break
 
-                data.write(file_chunk)
+                    data.write(file_chunk)
+        else:
+            file = request.files["file-upload"]
+            file.save(f"{TMP_LOCATION}{user_name}/tmp_file")
 
         return redirect(url_for("content.finalize_upload"))
 

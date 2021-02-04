@@ -9,3 +9,5 @@ class Config:
     TMP_LOCATION = f"{CURRENT_DIR}/storage/tmp/"
     PRIVATE_FILES_LOCATION = f"{CURRENT_DIR}/storage/private/"
     APP_PORT = 8080
+    LEGACY_UPLOAD = False
+    UPLOAD_CHUNK_SIZE = 4096
