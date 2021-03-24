@@ -97,6 +97,7 @@ input.login-form-input {
 .main-container {
     height: 100%;
     padding: 0 5px;
+    padding-bottom: 40px;
 }
 
 .upload-container {
