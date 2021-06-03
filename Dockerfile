@@ -6,4 +6,4 @@ WORKDIR /HomeDrive
 
 RUN pip3 install -r requirements.txt
 
-CMD ["python3", "app.py"]
+CMD gunicorn -c gunicorn.conf.py app:app --preload

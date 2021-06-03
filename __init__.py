@@ -2,11 +2,13 @@ from flask import Flask
 import flask_login
 from users import User
 from users import users_accounts
-import Permissions
+import permissions
+import os
 
 
 def create_app():
     app = Flask(__name__, instance_relative_config=False)
+    app.secret_key = os.urandom(25)
     app.config.from_object('config.Config')
 
     login_manager = flask_login.LoginManager()
@@ -19,8 +21,8 @@ def create_app():
         if username not in users:
             return
 
-        user = User.User(Permissions.can_delete(username), Permissions.have_private_space(username),
-                         Permissions.can_upload(username))
+        user = User.User(permissions.can_delete(username), permissions.have_private_space(username),
+                         permissions.can_upload(username))
         user.id = username
         return user
 

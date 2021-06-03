@@ -2,8 +2,8 @@ from flask import render_template, Blueprint, redirect, url_for, request, send_f
 from flask import current_app as app
 import flask_login
 import os
-from Utils import get_current_files_size, check_dir
-import Permissions
+from utils import get_current_files_size, check_dir
+import permissions
 import shutil
 from werkzeug.utils import secure_filename
 
@@ -32,9 +32,9 @@ def home():
 
         user_name = flask_login.current_user.id
 
-        can_delete = Permissions.can_delete(user_name)
-        can_upload = Permissions.can_upload(user_name)
-        have_private_space = Permissions.have_private_space(user_name)
+        can_delete = permissions.can_delete(user_name)
+        can_upload = permissions.can_upload(user_name)
+        have_private_space = permissions.have_private_space(user_name)
 
         return render_template("index.html", files=files, max_size=max_size, current_size=current_size,
                                can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space)
@@ -51,12 +51,12 @@ def private():
 
         files = os.listdir(f"{PRIVATE_FILES_LOCATION}{user_name}")
 
-        max_private_size = Permissions.max_private_files_size(user_name)
+        max_private_size = permissions.max_private_files_size(user_name)
 
         current_size = f"{str(round(get_current_files_size(f'{PRIVATE_FILES_LOCATION}{user_name}/') / 1000000000, 2))} GB"
         max_size = f"{max_private_size / 1000000000} GB"
 
-        have_private_space = Permissions.have_private_space(user_name)
+        have_private_space = permissions.have_private_space(user_name)
 
         return render_template("private.html", files=files, max_size=max_size, current_size=current_size,
                                 have_private_space=have_private_space)
@@ -69,8 +69,8 @@ def private():
 def upload_view():
     user_name = flask_login.current_user.id
 
-    have_private_space = Permissions.have_private_space(user_name)
-    can_upload = Permissions.can_upload(user_name)
+    have_private_space = permissions.have_private_space(user_name)
+    can_upload = permissions.can_upload(user_name)
 
     files = os.listdir(FILES_LOCATION)
 
@@ -85,8 +85,8 @@ def upload_view():
 @flask_login.login_required
 def move_upload():
     user_name = flask_login.current_user.id
-    can_upload = Permissions.can_upload(user_name)
-    have_private_space = Permissions.have_private_space(user_name)
+    can_upload = permissions.can_upload(user_name)
+    have_private_space = permissions.have_private_space(user_name)
 
     if can_upload or have_private_space:
         if os.path.exists(f"{TMP_LOCATION}{user_name}/tmp_file"):
@@ -150,8 +150,8 @@ def move_upload():
 @flask_login.login_required
 def finalize_upload():
     user_name = flask_login.current_user.id
-    can_upload = Permissions.can_upload(user_name)
-    have_private_space = Permissions.have_private_space(user_name)
+    can_upload = permissions.can_upload(user_name)
+    have_private_space = permissions.have_private_space(user_name)
 
     if can_upload or have_private_space:
         if os.path.exists(f"{TMP_LOCATION}{user_name}/tmp_file"):
@@ -167,8 +167,8 @@ def finalize_upload():
 @flask_login.login_required
 def upload():
     user_name = flask_login.current_user.id
-    can_upload = Permissions.can_upload(user_name)
-    have_private_space = Permissions.have_private_space(user_name)
+    can_upload = permissions.can_upload(user_name)
+    have_private_space = permissions.have_private_space(user_name)
 
     if can_upload or have_private_space:
         check_dir(f"{TMP_LOCATION}{user_name}")
@@ -209,7 +209,7 @@ def operations():
 @flask_login.login_required
 def operations_private():
     user_name = flask_login.current_user.id
-    have_private_space = Permissions.have_private_space(user_name)
+    have_private_space = permissions.have_private_space(user_name)
 
     if have_private_space:
         if request.args.get("download_file"):
@@ -224,7 +224,7 @@ def operations_private():
 @flask_login.login_required
 def download_private(file_name):
     user_name = flask_login.current_user.id
-    have_private_space = Permissions.have_private_space(user_name)
+    have_private_space = permissions.have_private_space(user_name)
 
     if have_private_space:
         if file_name.endswith(".pdf")  or file_name.endswith(".txt"):
@@ -239,7 +239,7 @@ def download_private(file_name):
 @flask_login.login_required
 def delete_private(file_name):
     user_name = flask_login.current_user.id
-    have_private_space = Permissions.have_private_space(user_name)
+    have_private_space = permissions.have_private_space(user_name)
 
     if have_private_space:
         os.remove(f"{PRIVATE_FILES_LOCATION}{user_name}/{file_name}")
@@ -262,7 +262,7 @@ def download(file_name):
 @flask_login.login_required
 def delete(file_name):
     user_name = flask_login.current_user.id
-    can_delete_files = Permissions.can_delete(user_name)
+    can_delete_files = permissions.can_delete(user_name)
 
     if can_delete_files:
         os.remove(f"{FILES_LOCATION}{file_name}")
@@ -275,7 +275,7 @@ def delete(file_name):
 def reboot():
     user_name = flask_login.current_user.id
 
-    if Permissions.is_admin(user_name):
+    if permissions.is_admin(user_name):
         os.system("reboot")
 
         return "Rebooting"
@@ -288,7 +288,7 @@ def reboot():
 def shutdown():
     user_name = flask_login.current_user.id
 
-    if Permissions.is_admin(user_name):
+    if permissions.is_admin(user_name):
         os.system("shutdown")
 
         return "Shutting now"
