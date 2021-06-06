@@ -123,6 +123,26 @@ def directory_content(dir_name):
         return redirect(url_for("content.home"))
 
 
+@content_.route("/content/move/<file_name>", methods=["GET", "POST"])
+@flask_login.login_required
+def move_file(file_name):
+    user_name = flask_login.current_user.id
+
+    if permissions.have_private_space(user_name):
+        objects_path = f"{PRIVATE_FILES_LOCATION}{user_name}"
+
+        dirs = ["/"]
+        objects = os.listdir(objects_path)
+
+        for obj in objects:
+            if os.path.isdir(os.path.join(objects_path, obj)):
+                dirs.append(obj)
+
+        return render_template("move_file.html", dirs=dirs, file_name=file_name)
+    else:
+        return redirect(url_for("content.home"))
+
+
 @content_.route("/content/operations", methods=["GET", "POST"])
 @flask_login.login_required
 def operations():
@@ -150,3 +170,6 @@ def operations_private():
         elif request.args.get("browse_dir"):
             dir_name = request.args.get("browse_dir")
             return redirect(url_for("content.directory_content", dir_name=dir_name))
+        elif request.args.get("move_file"):
+            file_name = request.args.get("move_file")
+            return redirect(url_for("content.move_file", file_name=file_name))

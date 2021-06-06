@@ -9,7 +9,7 @@
         <title>HomeDrive - Private</title>
     </head>
     <body>
-        <div class="delete-modal" id="delete-modal">
+        <div class="action-modal" id="delete-modal">
             <p id="delete-file-name"></p>
             <form method="GET" action="{{ url_for('content.operations_private') }}" enctype="multipart/form-data">
                 <button class="modal-delete-button" id="delete-modal-button" name="delete_file" type="submit">Yes</button>
@@ -49,8 +49,10 @@
                         <div class="item">
                             {{file}}
                             <span class="item-buttons">
+                                <button class="move-button" value="{{file}}" id="move_file" name="move_file"
+                                        type="submit">Move</button>
                                 <button id="delete-file-button" class="delete-button" onclick="showDeleteModal(this.value);"
-                                            value="{{file}}" name="delete_file_modal" type="button">Delete</button>
+                                        value="{{file}}" name="delete_file_modal" type="button">Delete</button>
                                 <button class="download-button" value="{{file}}" name="download_file" type="submit">Download</button>
                             </span>
                         </div>

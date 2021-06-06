@@ -241,3 +241,61 @@ def upload():
 
     else:
         return redirect(url_for("content.home"))
+
+
+@files_operations_.route("/files_operations/move/process", methods=["POST"])
+@flask_login.login_required
+def move_file_process():
+    #TODO rework this one
+
+    user_name = flask_login.current_user.id
+
+    if permissions.have_private_space(user_name):
+        objects_path = f"{PRIVATE_FILES_LOCATION}{user_name}"
+
+        dirs = ["/"]
+        objects = os.listdir(objects_path)
+
+        for obj in objects:
+            if os.path.isdir(os.path.join(objects_path, obj)):
+                dirs.append(obj)
+
+        if request.form["dirs"]:
+            objects_root = f"{PRIVATE_FILES_LOCATION}{user_name}"
+
+            dest_dir = request.form["dirs"]
+            file_name = request.form["file_name"]
+            file_name = decode_path(file_name)
+
+            decoded_name_splited = file_name.split("/")
+
+            if not dest_dir == "/":
+                dest_dir = secure_filename(dest_dir)
+
+            if len(decoded_name_splited) < 2:
+                file_name = file_name.split("/")[0]
+
+                file_name = secure_filename(file_name)
+
+                file_path = os.path.join(objects_root, file_name)
+                dest_path = os.path.join(dest_dir, file_name)
+                dest_path = f"{objects_root}/{dest_path}"
+            else:
+                file_dir = file_name.split("/")[0]
+                file_name = file_name.split("/")[1]
+
+                file_name = secure_filename(file_name)
+                file_dir = secure_filename(file_dir)
+
+                file_path = os.path.join(objects_root, os.path.join(file_dir, file_name))
+                dest_path = os.path.join(dest_dir, file_name)
+                dest_path = f"{objects_root}/{dest_path}"
+
+            shutil.move(file_path, dest_path)
+
+            return redirect(url_for("content.private"))
+        else:
+            message = "choose directory first"
+            return render_template("move_file.html", message=message)
+    else:
+        return redirect(url_for("content.home"))

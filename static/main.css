@@ -182,7 +182,6 @@ input.login-form-input {
 }
 
 .item-buttons .delete-button {
-    margin-right: 5px;
     background-color: red;
     color: white;
     border-radius: 10px;
@@ -190,6 +189,12 @@ input.login-form-input {
 
 .item-buttons .download-button {
     background-color: #14A76C;
+    color: white;
+    border-radius: 10px;
+}
+
+.item-buttons .move-button {
+    background-color: #f5bc42;
     color: white;
     border-radius: 10px;
 }
@@ -203,7 +208,7 @@ input.login-form-input {
     padding: 5px;
 }
 
-.delete-modal {
+.action-modal {
     display: none;
     position: fixed;
     justify-content: center;
@@ -213,6 +218,10 @@ input.login-form-input {
     height: 100%;
     z-index: 1;
     background-color: rgba(0,0,0,0.4);
+}
+
+.modal-buttons {
+    text-align: center;
 }
 
 .modal-delete-button {
@@ -268,6 +277,10 @@ input.login-form-input {
 
 .download-button:hover {
     background-color: #108656;
+}
+
+.move-button:hover {
+    background-color: #f7ac0a;
 }
 
 .upload_dir_select {
