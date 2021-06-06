@@ -11,7 +11,7 @@
     <body>
         <div class="delete-modal" id="delete-modal">
             <p id="delete-file-name"></p>
-            <form method="GET" action="/main/operations" enctype="multipart/form-data">
+            <form method="GET" action="{{ url_for('content.operations') }}" enctype="multipart/form-data">
                 <button class="modal-delete-button" id="delete-modal-button" name="delete_file" type="submit">Yes</button>
                 <button class="modal-close-button" onclick="closeDeleteModal();" type="button">No</button>
             </form>
@@ -19,7 +19,7 @@
         <div class="container">
             <div class="navbar">
                 <span class="main-title">HomeDrive</span>
-                <form action="/logout" method="POST">
+                <form action="{{ url_for('auth.logout') }}" method="POST">
                     {% if can_upload %}
                         <button type="button" class="upload-button">
                             <a href="{{ url_for('content.upload_view') }}">Upload</a>
@@ -35,7 +35,7 @@
                 {% endif %}
             </div>
             <div class="main-container">
-                <form method="GET" action="/main/operations" enctype="multipart/form-data">
+                <form method="GET" action="{{ url_for('content.operations') }}" enctype="multipart/form-data">
                     {%for file in files%}
                         <div class="item">
                             {{file}}

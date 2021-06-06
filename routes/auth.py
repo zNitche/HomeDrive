@@ -51,4 +51,3 @@ def logout():
     flask_login.logout_user()
 
     return redirect(url_for("content.home"))
-

@@ -11,15 +11,15 @@
     <body>
         <div class="delete-modal" id="delete-modal">
             <p id="delete-file-name"></p>
-            <form method="GET" action="/main/operations_private" enctype="multipart/form-data">
+            <form method="GET" action="{{ url_for('content.operations_private') }}" enctype="multipart/form-data">
                 <button class="modal-delete-button" id="delete-modal-button" name="delete_file" type="submit">Yes</button>
                 <button class="modal-close-button" onclick="closeDeleteModal();" type="button">No</button>
             </form>
         </div>
         <div class="container">
             <div class="navbar">
-                <span class="main-title">HomeDrive - Private</span>
-                <form action="/logout" method="POST">
+                <span class="main-title">HomeDrive - Private/{{ dir_name }}</span>
+                <form action="{{ url_for('auth.logout') }}" method="POST">
                     <button type="button" class="upload-button">
                         <a href="{{ url_for('content.private') }}">Private</a>
                     </button>
@@ -30,7 +30,7 @@
                 {{dir_name}}
             </div>
             <div class="main-container">
-                <form method="GET" action="/main/operations_private" enctype="multipart/form-data">
+                <form method="GET" action="{{ url_for('content.operations_private') }}" enctype="multipart/form-data">
                     {% for file in files %}
                         <div class="item">
                             {{file}}
