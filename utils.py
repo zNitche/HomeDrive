@@ -1,4 +1,6 @@
 import os
+import json
+from config import Config
 
 
 def get_current_files_size(FILES_LOCATION):
@@ -19,3 +21,10 @@ def decode_path(path_name):
         path_name = path_name.replace("%2F", "/")
 
     return path_name
+
+
+def get_users():
+    with open(f"{Config.CURRENT_DIR}/users/users.json", "r") as accounts:
+        users = json.loads(accounts.read())
+
+    return users
