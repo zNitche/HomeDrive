@@ -247,7 +247,6 @@ def upload():
 @flask_login.login_required
 def move_file_process():
     #TODO rework this one
-
     user_name = flask_login.current_user.id
 
     if permissions.have_private_space(user_name):
