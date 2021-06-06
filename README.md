@@ -16,4 +16,5 @@ sudo docker run --name=homedrive -d -v <path_to_files_storage> -p 8080:8080 home
 1. Login (Test user creds: `login = user | password = test`)
 2. Use `Shared/Private` switch to switch between shared and private space (if current user has private space)
 3. Use `Download/Delete` buttons to manage files (download and delete them)
-4. Use `Upload` button to upload file to shared or private space
+4. Use `Create Directory` button to create directory inside your private space
+4. Use `Upload` button to upload file to shared or private space (or selected directory inside private space)
