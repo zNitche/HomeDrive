@@ -21,37 +21,24 @@
                 <span class="main-title">HomeDrive - Private</span>
                 <form action="/logout" method="POST">
                     <button type="button" class="upload-button">
-                        <a href="{{ url_for('content.new_directory_view') }}">Create Directory</a>
-                    </button>
-                    <button type="button" class="upload-button">
-                        <a href="{{ url_for('content.upload_view') }}">Upload</a>
+                        <a href="{{ url_for('content.private') }}">Private</a>
                     </button>
                     <button class="logout-button" type="submit">Logout</button>
                 </form>
             </div>
             <div class="mode-panel">
-                <a href="{{ url_for('content.home') }}">Shared</a>
-                <a href="{{ url_for('content.private') }}">Private</a>
+                {{dir_name}}
             </div>
             <div class="main-container">
                 <form method="GET" action="/main/operations_private" enctype="multipart/form-data">
-                    {% for dir in dirs %}
-                        <div class="item">
-                            {{dir}}
-                            <span class="item-buttons">
-                                <button id="delete-dir-button" class="delete-button" onclick="showDeleteModal(this.value);"
-                                            value="{{dir}}" name="delete_file_modal" type="button">Delete</button>
-                                <button class="download-button" value="{{dir}}" name="browse_dir" type="submit">Enter</button>
-                            </span>
-                        </div>
-                    {% endfor %}
                     {% for file in files %}
                         <div class="item">
                             {{file}}
                             <span class="item-buttons">
                                 <button id="delete-file-button" class="delete-button" onclick="showDeleteModal(this.value);"
-                                            value="{{file}}" name="delete_file_modal" type="button">Delete</button>
-                                <button class="download-button" value="{{file}}" name="download_file" type="submit">Download</button>
+                                            value="{{dir_name}}%2F{{file}}" name="delete_file" type="button">Delete</button>
+                                <button class="download-button" value="{{dir_name}}%2F{{file}}"
+                                        name="download_file" type="submit">Download</button>
                             </span>
                         </div>
                     {% endfor %}

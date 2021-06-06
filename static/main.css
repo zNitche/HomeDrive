@@ -126,6 +126,14 @@ input.login-form-input {
     width: 100%;
 }
 
+.upload-container .create-directory-button {
+    display: block;
+    background-color: #FFE400;
+    color: white;
+    border-radius: 10px;
+    width: 100%;
+}
+
 .upload-container .finalize-upload-button {
     display: block;
     background-color: #FFE400;
@@ -252,4 +260,8 @@ input.login-form-input {
 
 .download-button:hover {
     background-color: #108656;
+}
+
+.upload_dir_select {
+    text-align: center;
 }

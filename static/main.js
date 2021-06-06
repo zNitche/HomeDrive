@@ -5,6 +5,17 @@ function getFileName(myFile){
    document.getElementById("upload_button").style.display = "block";
 }
 
+function showDirSelect(space){
+   if (space == "shared") {
+        document.getElementById("dirs").style.display = "none";
+        document.getElementById("dirs_label").style.display = "none";
+   }
+   else {
+        document.getElementById("dirs").style.display = "inline";
+        document.getElementById("dirs_label").style.display = "block";
+   }
+}
+
 function showDeleteModal(value){
     document.getElementById('delete-modal').style.display='flex'
     document.getElementById('delete-modal-button').value = value;

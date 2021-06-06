@@ -12,3 +12,10 @@ def get_current_files_size(FILES_LOCATION):
 def check_dir(path):
     if not os.path.exists(path):
         os.mkdir(path)
+
+
+def decode_path(path_name):
+    if "%2F" in path_name:
+        path_name = path_name.replace("%2F", "/")
+
+    return path_name
