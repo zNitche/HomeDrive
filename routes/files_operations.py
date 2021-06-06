@@ -19,7 +19,7 @@ LEGACY_UPLOAD = app.config["LEGACY_UPLOAD"]
 UPLOAD_CHUNK_SIZE = app.config["UPLOAD_CHUNK_SIZE"]
 
 
-@files_operations_.route("/main/download_private/<file_name>", methods=["GET"])
+@files_operations_.route("/files_operations/download_private/<file_name>", methods=["GET"])
 @flask_login.login_required
 def download_private(file_name):
     user_name = flask_login.current_user.id
@@ -36,7 +36,7 @@ def download_private(file_name):
                              as_attachment=True, attachment_filename=f'{file_name}', cache_timeout=0)
 
 
-@files_operations_.route("/main/delete_private/<file_name>", methods=["GET"])
+@files_operations_.route("/files_operations/delete_private/<file_name>", methods=["GET"])
 @flask_login.login_required
 def delete_private(file_name):
     user_name = flask_login.current_user.id
@@ -55,7 +55,7 @@ def delete_private(file_name):
     return redirect(url_for("content.private"))
 
 
-@files_operations_.route("/main/download/<file_name>", methods=["GET"])
+@files_operations_.route("/files_operations/download/<file_name>", methods=["GET"])
 @flask_login.login_required
 def download(file_name):
     if file_name.endswith(".pdf") or file_name.endswith(".txt"):
@@ -66,7 +66,7 @@ def download(file_name):
                          cache_timeout=0)
 
 
-@files_operations_.route("/main/delete/<file_name>", methods=["GET"])
+@files_operations_.route("/files_operations/delete/<file_name>", methods=["GET"])
 @flask_login.login_required
 def delete(file_name):
     user_name = flask_login.current_user.id
@@ -78,7 +78,7 @@ def delete(file_name):
     return redirect(url_for("content.home"))
 
 
-@files_operations_.route("/create_dir/process", methods=["POST"])
+@files_operations_.route("/files_operations/create_dir/process", methods=["POST"])
 @flask_login.login_required
 def create_new_directory():
     user_name = flask_login.current_user.id
@@ -107,7 +107,7 @@ def create_new_directory():
         return redirect(url_for("content.home"))
 
 
-@files_operations_.route("/main/upload/finalize/move", methods=["POST", "GET"])
+@files_operations_.route("/files_operations/upload/finalize/move", methods=["POST", "GET"])
 @flask_login.login_required
 def move_upload():
     user_name = flask_login.current_user.id
@@ -187,7 +187,7 @@ def move_upload():
                     return redirect(url_for("content.home"))
 
 
-@files_operations_.route("/main/upload/finalize", methods=["POST", "GET"])
+@files_operations_.route("/files_operations/upload/finalize", methods=["POST", "GET"])
 @flask_login.login_required
 def finalize_upload():
     user_name = flask_login.current_user.id
@@ -212,7 +212,7 @@ def finalize_upload():
         return redirect(url_for("content.home"))
 
 
-@files_operations_.route("/main/upload", methods=["POST"])
+@files_operations_.route("/files_operations/upload", methods=["POST"])
 @flask_login.login_required
 def upload():
     user_name = flask_login.current_user.id

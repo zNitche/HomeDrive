@@ -9,7 +9,7 @@ from passlib.hash import sha256_crypt
 auth_ = Blueprint("auth", __name__, template_folder='template', static_folder='static')
 
 
-@auth_.route("/login")
+@auth_.route("/auth/login")
 def login():
     if flask_login.current_user.is_authenticated:
         return redirect(url_for("content.home"))
@@ -18,7 +18,7 @@ def login():
         return render_template("login.html", message=message)
 
 
-@auth_.route("/login/check", methods=["POST"])
+@auth_.route("/auth/login/check", methods=["POST"])
 def check():
     if flask_login.current_user.is_authenticated:
         return redirect(url_for("content.home"))
@@ -45,7 +45,7 @@ def check():
             return render_template("login.html", message=message)
 
 
-@auth_.route("/logout", methods=["POST", "GET"])
+@auth_.route("/auth/logout", methods=["POST", "GET"])
 @flask_login.login_required
 def logout():
     flask_login.logout_user()

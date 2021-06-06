@@ -81,7 +81,7 @@ def upload_view():
         return redirect(url_for("content.home"))
 
 
-@content_.route("/create_dir")
+@content_.route("/private/create_dir")
 @flask_login.login_required
 def new_directory_view():
     user_name = flask_login.current_user.id
@@ -123,7 +123,7 @@ def directory_content(dir_name):
         return redirect(url_for("content.home"))
 
 
-@content_.route("/main/operations", methods=["GET", "POST"])
+@content_.route("/content/operations", methods=["GET", "POST"])
 @flask_login.login_required
 def operations():
     if request.args.get("download_file"):
@@ -134,7 +134,7 @@ def operations():
         return redirect(url_for("files_operations.delete", file_name=file_name))
 
 
-@content_.route("/main/operations_private", methods=["GET", "POST"])
+@content_.route("/content/operations_private", methods=["GET", "POST"])
 @flask_login.login_required
 def operations_private():
     user_name = flask_login.current_user.id
