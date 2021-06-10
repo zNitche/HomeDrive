@@ -1,6 +1,7 @@
 import multiprocessing
+from config import Config
 
 
-bind = "0.0.0.0:8080"
+bind = f"{Config.APP_HOST}:{Config.APP_PORT}"
 workers = multiprocessing.cpu_count() * 2 + 1
-timeout = 0
+timeout = Config.APP_TIMEOUT
