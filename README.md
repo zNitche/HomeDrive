@@ -8,7 +8,7 @@
 3. Build docker image `sudo docker build -t homedrive .`
 4. Run docker container
 ```
-sudo docker run --name=homedrive -d -v <path_to_files_storage> -p 8080:8080 homedrive
+sudo docker run --name=homedrive -d -v <path_to_storage_on_host>:/HomeDrive/storage -p 8080:8080 homedrive
 ```
 5. Make docker container restart after reboot `sudo docker update --restart unless-stopped homedrive`
 
