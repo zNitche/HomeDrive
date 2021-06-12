@@ -102,6 +102,11 @@ input.login-form-input {
     background-color: #272727;
 }
 
+.navbar a {
+    color: #FFE400;
+    text-decoration: none;
+}
+
 .main-container {
     height: 100%;
     padding: 0 5px;
@@ -256,11 +261,6 @@ input.login-form-input {
 
 .upload-button:hover {
     background-color: #313131;
-}
-
-.upload-button a {
-    text-decoration: none;
-    color: #FFE400;
 }
 
 .upload-file-button:hover {

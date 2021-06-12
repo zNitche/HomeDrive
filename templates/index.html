@@ -23,11 +23,15 @@
                 <span class="main-title">HomeDrive</span>
                 <form action="{{ url_for('auth.logout') }}" method="POST">
                     {% if can_upload %}
-                        <button type="button" class="upload-button">
-                            <a href="{{ url_for('content.upload_view') }}">Upload</a>
-                        </button>
+                         <a href="{{ url_for('content.upload_view') }}">
+                            <button type="button" class="upload-button">
+                                Upload
+                            </button>
+                         </a>
                     {% endif %}
-                    <button class="logout-button" type="submit">Logout</button>
+                    <button class="logout-button" type="submit">
+                        Logout
+                    </button>
                 </form>
             </div>
             <div class="mode-panel">

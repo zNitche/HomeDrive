@@ -13,10 +13,14 @@
             <div class="navbar">
                 <span class="main-title">HomeDrive</span>
                 <form action="{{ url_for('auth.logout') }}" method="POST">
-                    <button type="button" class="upload-button">
-                        <a href="{{ url_for('content.home') }}">Home</a>
+                    <a href="{{ url_for('content.home') }}">
+                        <button type="button" class="upload-button">
+                            Home
+                        </button>
+                    </a>
+                    <button class="logout-button" type="submit">
+                        Logout
                     </button>
-                    <button class="logout-button" type="submit">Logout</button>
                 </form>
             </div>
             <div class="main-container upload-container">
