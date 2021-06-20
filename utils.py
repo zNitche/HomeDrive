@@ -7,7 +7,11 @@ from werkzeug.utils import secure_filename
 def get_current_files_size(FILES_LOCATION):
     size = 0
     for file in os.listdir(FILES_LOCATION):
-        size += os.path.getsize(f"{FILES_LOCATION}{file}")
+        if os.path.isdir(os.path.join(FILES_LOCATION, file)):
+            for file_inside_dir in os.listdir(f"{FILES_LOCATION}{file}"):
+                size += os.path.getsize(f"{FILES_LOCATION}{file}/{file_inside_dir}")
+        else:
+            size += os.path.getsize(f"{FILES_LOCATION}{file}")
 
     return size
 
