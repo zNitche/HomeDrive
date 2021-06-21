@@ -1,47 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-        <script src="{{ url_for('static', filename='main.js') }}"></script>
-
-        <title>HomeDrive</title>
-    </head>
-    <body>
-        <div class="container">
-            <div class="navbar">
-                <span class="main-title">HomeDrive</span>
-                <form action="{{ url_for('auth.logout') }}" method="POST">
-                    <a href="{{ url_for('content.home') }}">
-                        <button type="button" class="upload-button">
-                            Home
-                        </button>
-                    </a>
-                    <button class="logout-button" type="submit">
-                        Logout
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <div class="navbar">
+            <span class="main-title">HomeDrive</span>
+            <form action="{{ url_for('auth.logout') }}" method="POST">
+                <a href="{{ url_for('content.home') }}">
+                    <button type="button" class="upload-button">
+                        Home
                     </button>
+                </a>
+                <button class="logout-button" type="submit">
+                    Logout
+                </button>
+            </form>
+        </div>
+        <div class="main-container upload-container">
+            <div class="upload-container">
+                <form action="{{ url_for('files_operations.upload') }}" method="POST" enctype="multipart/form-data">
+                    <label for="file-upload" class="upload-file-label">Choose File</label>
+                    <input type="file" class="upload-file" value="File to be uploaded" id="file-upload"
+                           name="file-upload" onchange="getFileName(this);" />
+                    <p class="file-name">
+                        <span id="file_name"></span>
+                    </p>
+                    <p>
+                        <button id="upload_button" class="upload-file-button" type="submit">Upload</button>
+                    </p>
                 </form>
-            </div>
-            <div class="main-container upload-container">
-                <div class="upload-container">
-                    <form action="{{ url_for('files_operations.upload') }}" method="POST" enctype="multipart/form-data">
-                        <label for="file-upload" class="upload-file-label">Choose File</label>
-                        <input type="file" class="upload-file" value="File to be uploaded" id="file-upload"
-                               name="file-upload" onchange="getFileName(this);" />
-                        <p class="file-name">
-                            <span id="file_name"></span>
-                        </p>
-                        <p>
-                            <button id="upload_button" class="upload-file-button" type="submit">Upload</button>
-                        </p>
-                    </form>
-                    <p>{{message}}</p>
-                </div>
-            </div>
-            <div class="footer">
-                {{current_size}} / {{max_size}}
+                <p>{{message}}</p>
             </div>
         </div>
-    </body>
-</html>
+        <div class="footer">
+            {{current_size}} / {{max_size}}
+        </div>
+    </div>
+{% endblock %}

@@ -1,49 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-        <script src="{{ url_for('static', filename='main.js') }}"></script>
-
-        <title>HomeDrive</title>
-    </head>
-    <body>
-        <div class="container">
-            <div class="navbar">
-                <span class="main-title">HomeDrive</span>
-                <form action="{{ url_for('auth.logout') }}" method="POST">
-                    <a href="{{ url_for('content.home') }}">
-                        <button type="button" class="upload-button">
-                            Home
-                        </button>
-                    </a>
-                    <button class="logout-button" type="submit">
-                        Logout
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <div class="navbar">
+            <span class="main-title">HomeDrive</span>
+            <form action="{{ url_for('auth.logout') }}" method="POST">
+                <a href="{{ url_for('content.home') }}">
+                    <button type="button" class="upload-button">
+                        Home
                     </button>
+                </a>
+                <button class="logout-button" type="submit">
+                    Logout
+                </button>
+            </form>
+        </div>
+        <div class="main-container upload-container">
+            <div class="upload-container">
+                <form action="{{ url_for('files_operations.move_file_process') }}" method="POST" enctype="multipart/form-data">
+                    <label id="dirs_label" for="dirs">Choose a directory to move {{ file_name }} to:</label>
+                    <p class="upload_dir_select">
+                        <select name="dirs" id="dirs">
+                            {% for dir in dirs %}
+                                <option value="{{ dir }}" name="dir">{{ dir }}</option>
+                            {% endfor %}
+                        </select>
+                    </p>
+                    <p>
+                        <button id="finalize_button" class="finalize-upload-button" type="submit"
+                                name="file_name" value="{{ file_name }}">Move file</button>
+                    </p>
                 </form>
             </div>
-            <div class="main-container upload-container">
-                <div class="upload-container">
-                    <form action="{{ url_for('files_operations.move_file_process') }}" method="POST" enctype="multipart/form-data">
-                        <label id="dirs_label" for="dirs">Choose a directory to move {{ file_name }} to:</label>
-                        <p class="upload_dir_select">
-                            <select name="dirs" id="dirs">
-                                {% for dir in dirs %}
-                                    <option value="{{ dir }}" name="dir">{{ dir }}</option>
-                                {% endfor %}
-                            </select>
-                        </p>
-                        <p>
-                            <button id="finalize_button" class="finalize-upload-button" type="submit"
-                                    name="file_name" value="{{ file_name }}">Move file</button>
-                        </p>
-                    </form>
-                </div>
-                <div>{{message}}</div>
-            </div>
-            <div class="footer">
-            </div>
+            <div>{{message}}</div>
         </div>
-    </body>
-</html>
+        <div class="footer">
+        </div>
+    </div>
+{% endblock %}

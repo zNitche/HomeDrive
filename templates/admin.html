@@ -1,56 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-        <script src="{{ url_for('static', filename='main.js') }}"></script>
-
-        <title>HomeDrive</title>
-    </head>
-    <body>
-        <div class="admin-container">
-            <div class="navbar">
-                <span class="main-title">HomeDrive - Admin</span>
-                <form action="{{ url_for('auth.logout') }}" method="POST">
-                    <a href="{{ url_for('content.home') }}">
-                        <button type="button" class="upload-button">
-                            Home
-                        </button>
-                    </a>
-                    <button class="logout-button" type="submit">
-                        Logout
+{% extends "base.html" %}
+{% block content %}
+    <div class="admin-container">
+        <div class="navbar">
+            <span class="main-title">HomeDrive - Admin</span>
+            <form action="{{ url_for('auth.logout') }}" method="POST">
+                <a href="{{ url_for('content.home') }}">
+                    <button type="button" class="upload-button">
+                        Home
                     </button>
-                </form>
-            </div>
-            <div class="main-container">
-                <h2>
-                    App config:
-                </h2>
-                {% for key in config %}
-                    <p>
-                        {{ key }} = {{ config[key] }}
-                    </p>
-                {% endfor %}
-                <h2>
-                    Users:
-                </h2>
-                {% for key in users %}
-                    <p>
-                        <h3>
-                            {{ key }}:
-                        </h3>
-                        {% for k in users[key] %}
-                            <p>
-                                {{ k }} = {{ users[key][k] }}
-                            </p>
-                        {% endfor %}
-                    </p>
-                {% endfor %}
-            </div>
-            <div class="footer">
-                {{current_size}} / {{max_size}}
-            </div>
+                </a>
+                <button class="logout-button" type="submit">
+                    Logout
+                </button>
+            </form>
         </div>
-    </body>
-</html>
+        <div class="main-container">
+            <h2>
+                App config:
+            </h2>
+            {% for key in config %}
+                <p>
+                    {{ key }} = {{ config[key] }}
+                </p>
+            {% endfor %}
+            <h2>
+                Users:
+            </h2>
+            {% for key in users %}
+                <p>
+                    <h3>
+                        {{ key }}:
+                    </h3>
+                    {% for k in users[key] %}
+                        <p>
+                            {{ k }} = {{ users[key][k] }}
+                        </p>
+                    {% endfor %}
+                </p>
+            {% endfor %}
+        </div>
+        <div class="footer">
+            {{current_size}} / {{max_size}}
+        </div>
+    </div>
+{% endblock %}

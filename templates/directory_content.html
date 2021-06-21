@@ -1,56 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-        <script src="{{ url_for('static', filename='main.js') }}"></script>
-
-        <title>HomeDrive - Private</title>
-    </head>
-    <body>
-        <div class="action-modal" id="delete-modal">
-            <p id="delete-file-name"></p>
-            <form method="GET" action="{{ url_for('content.operations_private') }}" enctype="multipart/form-data">
-                <button class="modal-delete-button" id="delete-modal-button" name="delete_file" type="submit">Yes</button>
-                <button class="modal-close-button" onclick="closeDeleteModal();" type="button">No</button>
+{% extends "base.html" %}
+{% block content %}
+    <div class="action-modal" id="delete-modal">
+        <p id="delete-file-name"></p>
+        <form method="GET" action="{{ url_for('content.operations_private') }}" enctype="multipart/form-data">
+            <button class="modal-delete-button" id="delete-modal-button" name="delete_file" type="submit">Yes</button>
+            <button class="modal-close-button" onclick="closeDeleteModal();" type="button">No</button>
+        </form>
+    </div>
+    <div class="container">
+        <div class="navbar">
+            <span class="main-title">HomeDrive - Private/{{ dir_name }}</span>
+            <form action="{{ url_for('auth.logout') }}" method="POST">
+                <a href="{{ url_for('content.private') }}">
+                    <button type="button" class="upload-button">
+                        Private
+                    </button>
+                </a>
+                <button class="logout-button" type="submit">Logout</button>
             </form>
         </div>
-        <div class="container">
-            <div class="navbar">
-                <span class="main-title">HomeDrive - Private/{{ dir_name }}</span>
-                <form action="{{ url_for('auth.logout') }}" method="POST">
-                    <a href="{{ url_for('content.private') }}">
-                        <button type="button" class="upload-button">
-                            Private
-                        </button>
-                    </a>
-                    <button class="logout-button" type="submit">Logout</button>
-                </form>
-            </div>
-            <div class="mode-panel">
-                {{dir_name}}
-            </div>
-            <div class="main-container">
-                <form method="GET" action="{{ url_for('content.operations_private') }}" enctype="multipart/form-data">
-                    {% for file in files %}
-                        <div class="item">
-                            {{file}}
-                            <span class="item-buttons">
-                                <button class="move-button" value="{{dir_name}}%2F{{file}}" id="move_file" name="move_file"
-                                        type="submit">Move</button>
-                                <button id="delete-file-button" class="delete-button" onclick="showDeleteModal(this.value);"
-                                        value="{{dir_name}}%2F{{file}}" name="delete_file" type="button">Delete</button>
-                                <button class="download-button" value="{{dir_name}}%2F{{file}}"
-                                        name="download_file" type="submit">Download</button>
-                            </span>
-                        </div>
-                    {% endfor %}
-                </form>
-            </div>
-            <div class="footer">
-                {{current_size}} / {{max_size}}
-            </div>
+        <div class="mode-panel">
+            {{dir_name}}
         </div>
-    </body>
-</html>
+        <div class="main-container">
+            <form method="GET" action="{{ url_for('content.operations_private') }}" enctype="multipart/form-data">
+                {% for file in files %}
+                    <div class="item">
+                        {{file}}
+                        <span class="item-buttons">
+                            <button class="move-button" value="{{dir_name}}%2F{{file}}" id="move_file" name="move_file"
+                                    type="submit">Move</button>
+                            <button id="delete-file-button" class="delete-button" onclick="showDeleteModal(this.value);"
+                                    value="{{dir_name}}%2F{{file}}" name="delete_file" type="button">Delete</button>
+                            <button class="download-button" value="{{dir_name}}%2F{{file}}"
+                                    name="download_file" type="submit">Download</button>
+                        </span>
+                    </div>
+                {% endfor %}
+            </form>
+        </div>
+        <div class="footer">
+            {{current_size}} / {{max_size}}
+        </div>
+    </div>
+{% endblock %}

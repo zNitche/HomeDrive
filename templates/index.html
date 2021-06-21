@@ -1,65 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-        <script src="{{ url_for('static', filename='main.js') }}"></script>
-
-        <title>HomeDrive</title>
-    </head>
-    <body>
-        <div class="action-modal" id="delete-modal">
-            <p id="delete-file-name"></p>
-            <form method="GET" action="{{ url_for('content.operations') }}" enctype="multipart/form-data">
-                <p class="modal-buttons">
-                    <button class="modal-delete-button" id="delete-modal-button" name="delete_file" type="submit">Yes</button>
-                    <button class="modal-close-button" onclick="closeDeleteModal();" type="button">No</button>
-                </p>
+{% extends "base.html" %}
+{% block content %}
+    <div class="action-modal" id="delete-modal">
+        <p id="delete-file-name"></p>
+        <form method="GET" action="{{ url_for('content.operations') }}" enctype="multipart/form-data">
+            <p class="modal-buttons">
+                <button class="modal-delete-button" id="delete-modal-button" name="delete_file" type="submit">Yes</button>
+                <button class="modal-close-button" onclick="closeDeleteModal();" type="button">No</button>
+            </p>
+        </form>
+    </div>
+    <div class="container">
+        <div class="navbar">
+            <span class="main-title">HomeDrive</span>
+            <form action="{{ url_for('auth.logout') }}" method="POST">
+                {% if can_upload %}
+                     <a href="{{ url_for('content.upload_view') }}">
+                        <button type="button" class="upload-button">
+                            Upload
+                        </button>
+                     </a>
+                {% endif %}
+                <button class="logout-button" type="submit">
+                    Logout
+                </button>
             </form>
         </div>
-        <div class="container">
-            <div class="navbar">
-                <span class="main-title">HomeDrive</span>
-                <form action="{{ url_for('auth.logout') }}" method="POST">
-                    {% if can_upload %}
-                         <a href="{{ url_for('content.upload_view') }}">
-                            <button type="button" class="upload-button">
-                                Upload
-                            </button>
-                         </a>
-                    {% endif %}
-                    <button class="logout-button" type="submit">
-                        Logout
-                    </button>
-                </form>
-            </div>
-            <div class="mode-panel">
-                <a href="{{ url_for('content.home') }}">Shared</a>
-                {% if have_private_space %}
-                    <a href="{{ url_for('content.private') }}">Private</a>
-                {% endif %}
-            </div>
-            <div class="main-container">
-                <form method="GET" action="{{ url_for('content.operations') }}" enctype="multipart/form-data">
-                    {%for file in files%}
-                        <div class="item">
-                            {{file}}
-                            <span class="item-buttons">
-                                {% if can_delete %}
-                                    <button id="delete-button" class="delete-button" onclick="showDeleteModal(this.value);"
-                                            value="{{file}}" name="delete_file_modal" type="button">Delete</button>
-                                {% endif %}
-                                <button id="download-button" class="download-button" value="{{file}}"
-                                        name="download_file" type="submit">Download</button>
-                            </span>
-                        </div>
-                    {%endfor%}
-                </form>
-            </div>
-            <div class="footer">
-                {{current_size}} / {{max_size}}
-            </div>
+        <div class="mode-panel">
+            <a href="{{ url_for('content.home') }}">Shared</a>
+            {% if have_private_space %}
+                <a href="{{ url_for('content.private') }}">Private</a>
+            {% endif %}
         </div>
-    </body>
-</html>
+        <div class="main-container">
+            <form method="GET" action="{{ url_for('content.operations') }}" enctype="multipart/form-data">
+                {%for file in files%}
+                    <div class="item">
+                        {{file}}
+                        <span class="item-buttons">
+                            {% if can_delete %}
+                                <button id="delete-button" class="delete-button" onclick="showDeleteModal(this.value);"
+                                        value="{{file}}" name="delete_file_modal" type="button">Delete</button>
+                            {% endif %}
+                            <button id="download-button" class="download-button" value="{{file}}"
+                                    name="download_file" type="submit">Download</button>
+                        </span>
+                    </div>
+                {%endfor%}
+            </form>
+        </div>
+        <div class="footer">
+            {{current_size}} / {{max_size}}
+        </div>
+    </div>
+{% endblock %}
