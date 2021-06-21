@@ -9,13 +9,6 @@
         <title>HomeDrive</title>
     </head>
     <body>
-        <div class="delete-modal" id="delete-modal">
-            <p id="delete-file-name"></p>
-            <form method="GET" action="{{ url_for('content.operations') }}" enctype="multipart/form-data">
-                <button class="modal-delete-button" id="delete-modal-button" name="delete_file" type="submit">Yes</button>
-                <button class="modal-close-button" onclick="closeDeleteModal();" type="button">No</button>
-            </form>
-        </div>
         <div class="admin-container">
             <div class="navbar">
                 <span class="main-title">HomeDrive - Admin</span>
