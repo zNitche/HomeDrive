@@ -111,6 +111,7 @@ input.login-form-input {
     height: 100%;
     padding: 0 5px;
     padding-bottom: 40px;
+    overflow: auto;
 }
 
 .upload-container {
