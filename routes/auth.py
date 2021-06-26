@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, Blueprint
 import flask_login
-from users import User
+from users.user import User
 from users import users_accounts as users
 import permissions
 from passlib.hash import sha256_crypt
@@ -29,7 +29,7 @@ def check():
             username = request.form["user_name"]
 
             if sha256_crypt.verify(request.form["password"], users_accounts[username]["password"]):
-                user = User.User(permissions.can_delete(username), permissions.have_private_space(username),
+                user = User(permissions.can_delete(username), permissions.have_private_space(username),
                                  permissions.can_upload(username))
                 user.id = username
 
