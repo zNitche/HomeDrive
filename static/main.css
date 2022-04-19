@@ -73,6 +73,7 @@ input.login-form-input {
     margin-top: 10px;
     padding: 5px;
     border-radius: 10px;
+    border: none;
 }
 
 .navbar {
@@ -102,6 +103,8 @@ input.login-form-input {
     border-radius: 10px;
     color: #FFE400;
     background-color: #272727;
+    border: none;
+    margin: 0 2px 0 2px;
 }
 
 .navbar a {
@@ -122,6 +125,7 @@ input.login-form-input {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    text-align: center;
 }
 
 .upload-container .upload-file {
@@ -189,22 +193,22 @@ input.login-form-input {
     margin-left: auto;
 }
 
+.item-buttons button {
+    border: none;
+    border-radius: 10px;
+    color: white;
+}
+
 .item-buttons .delete-button {
     background-color: red;
-    color: white;
-    border-radius: 10px;
 }
 
 .item-buttons .download-button {
     background-color: #14A76C;
-    color: white;
-    border-radius: 10px;
 }
 
 .item-buttons .move-button {
     background-color: #f5bc42;
-    color: white;
-    border-radius: 10px;
 }
 
 .footer {
@@ -287,5 +291,12 @@ input.login-form-input {
 }
 
 .upload_dir_select {
+    text-align: center;
+}
+
+.upload-progress-container {
+    display: none;
+    flex-direction: column;
+    justify-items: center;
     text-align: center;
 }

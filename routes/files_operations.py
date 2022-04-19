@@ -7,6 +7,7 @@ import shutil
 import os
 from werkzeug.utils import secure_filename
 
+
 files_operations_ = Blueprint("files_operations", __name__, template_folder='template', static_folder='static')
 
 FILES_LOCATION = app.config["FILES_LOCATION"]

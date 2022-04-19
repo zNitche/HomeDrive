@@ -25,3 +25,27 @@ function showDeleteModal(value){
 function closeDeleteModal(){
     document.getElementById('delete-modal').style.display='none';
 }
+
+function uploadProgressHandler(event) {
+    document.getElementById('upload-progress').value = (event.loaded / event.total) * 100;
+}
+
+function uploadCompleteHandler(event, success_endpoint) {
+    window.location.replace(success_endpoint);
+}
+
+function asyncSendFile(upload_endpoint, success_endpoint) {
+    const xhr = new XMLHttpRequest();
+    const fd = new FormData();
+
+    xhr.upload.addEventListener("progress", uploadProgressHandler, false);
+    xhr.addEventListener("load", uploadCompleteHandler.bind(null, event, success_endpoint), false);
+
+    fd.append(document.getElementById("file_name").value, document.getElementById("file-upload").files[0]);
+
+    xhr.open("POST", upload_endpoint, true);
+
+    document.getElementById('upload-progress-container').style.display = "flex";
+
+    xhr.send(fd);
+}
