@@ -4,14 +4,14 @@ from config import Config
 from werkzeug.utils import secure_filename
 
 
-def get_current_files_size(FILES_LOCATION):
+def get_current_files_size(file_location):
     size = 0
-    for file in os.listdir(FILES_LOCATION):
-        if os.path.isdir(os.path.join(FILES_LOCATION, file)):
-            for file_inside_dir in os.listdir(f"{FILES_LOCATION}{file}"):
-                size += os.path.getsize(f"{FILES_LOCATION}{file}/{file_inside_dir}")
+    for file in os.listdir(file_location):
+        if os.path.isdir(os.path.join(file_location, file)):
+            for file_inside_dir in os.listdir(os.path.join(file_location, file)):
+                size += os.path.getsize(os.path.join(file_location, file, file_inside_dir))
         else:
-            size += os.path.getsize(f"{FILES_LOCATION}{file}")
+            size += os.path.getsize(os.path.join(file_location, file))
 
     return size
 
@@ -29,13 +29,13 @@ def decode_path(path_name):
         dir = secure_filename(path_name[0])
         file = secure_filename(path_name[1])
 
-        path_name = f"{dir}/{file}"
+        path_name = os.path.join(dir, file)
 
     return path_name
 
 
 def get_users():
-    with open(f"{Config.CURRENT_DIR}/users/users.json", "r") as accounts:
+    with open(os.path.join(Config.CURRENT_DIR, "users", "users.json"), "r") as accounts:
         users = json.loads(accounts.read())
 
     return users
