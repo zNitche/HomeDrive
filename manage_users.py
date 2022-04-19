@@ -1,6 +1,7 @@
 import json
 from config import Config
 import os
+import shutil
 from passlib.hash import sha256_crypt
 
 
@@ -11,19 +12,18 @@ def hash_password(plain_password):
 
 
 def load_users():
-    with open(f"{Config.CURRENT_DIR}/users/users.json", "r") as accounts:
+    with open(os.path.join(Config.CURRENT_DIR, "users", "users.json"), "r") as accounts:
         users = json.loads(accounts.read())
 
     return users
 
 
 def save_to_json(users):
-    with open(f"{Config.CURRENT_DIR}/users/users.json", "w") as accounts:
+    with open(os.path.join(Config.CURRENT_DIR, "users", "users.json"), "w") as accounts:
         accounts.write(json.dumps(users, indent=4))
 
 
 def add_user(user_name, password, can_upload, can_delete, have_private_space, private_space_size, is_admin):
-
     if user_name in load_users():
         return 0
 
@@ -31,11 +31,11 @@ def add_user(user_name, password, can_upload, can_delete, have_private_space, pr
     crypted_password = hash_password(password)
 
     users[user_name] = {"password": crypted_password, "have_private_space": have_private_space,
-                       "can_delete_files": can_delete, "can_upload": can_upload, "max_files_size": private_space_size,
+                        "can_delete_files": can_delete, "can_upload": can_upload, "max_files_size": private_space_size,
                         "admin": is_admin}
 
     save_to_json(users)
-    os.mkdir(f"{Config.PRIVATE_FILES_LOCATION}{user_name}")
+    os.mkdir(os.path.join(Config.PRIVATE_FILES_LOCATION, user_name))
 
     return 1
 
@@ -47,7 +47,8 @@ def delete_user(user_name):
         return 0
 
     del users[user_name]
-    os.system(f"rm -rf {Config.PRIVATE_FILES_LOCATION}{user_name}")
+
+    shutil.rmtree(os.path.join(Config.PRIVATE_FILES_LOCATION, user_name))
 
     save_to_json(users)
 
@@ -62,9 +63,9 @@ def show_users():
 
 
 def conv_to_bool(s):
-    if s == "true":
+    if s == "true" or s == "True":
         return True
-    elif s == "false":
+    elif s == "false" or s == "False":
         return False
 
 
