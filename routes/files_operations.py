@@ -7,9 +7,7 @@ import shutil
 import os
 from werkzeug.utils import secure_filename
 
-
 files_operations_ = Blueprint("files_operations", __name__, template_folder='template', static_folder='static')
-
 
 FILES_LOCATION = app.config["FILES_LOCATION"]
 MAX_SHARED_FILES_SIZE = app.config["MAX_SHARED_FILES_SIZE"]
@@ -67,7 +65,8 @@ def download(file_name):
     if file_name.endswith(".pdf") or file_name.endswith(".txt"):
         as_attachment = False
 
-    return send_file(os.path.join(FILES_LOCATION, file_name), as_attachment=as_attachment, attachment_filename=file_name,
+    return send_file(os.path.join(FILES_LOCATION, file_name), as_attachment=as_attachment,
+                     attachment_filename=file_name,
                      cache_timeout=0)
 
 
@@ -126,17 +125,11 @@ def move_upload():
             space = request.form["space"]
 
             if can_upload and space == "shared":
-                if os.path.getsize(tmp_file_path) + utils.get_current_files_size(FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
+                if os.path.getsize(tmp_file_path) + utils.get_current_files_size(
+                        FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
 
                     if not os.path.exists(os.path.join(FILES_LOCATION, file_name)):
-                        # Handle cross-device link in docker
-                        file_source = open(tmp_file_path, "rb")
-                        file_dest = open(os.path.join(FILES_LOCATION, file_name), "wb")
-
-                        shutil.copyfileobj(file_source, file_dest, 4096)
-
-                        file_source.close()
-                        file_dest.close()
+                        shutil.copy2(tmp_file_path, os.path.join(FILES_LOCATION, file_name))
 
                         os.remove(tmp_file_path)
 
@@ -151,7 +144,8 @@ def move_upload():
                     return redirect(url_for("content.home"))
 
             if have_private_space and space == "private":
-                if os.path.getsize(tmp_file_path) + utils.get_current_files_size(FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
+                if os.path.getsize(tmp_file_path) + utils.get_current_files_size(
+                        FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
 
                     files_root_path = os.path.join(PRIVATE_FILES_LOCATION, user_name)
 
@@ -162,14 +156,7 @@ def move_upload():
                         dest_path = os.path.join(files_root_path, os.path.join(dir_name, file_name))
 
                     if not os.path.exists(dest_path):
-                        # Handle cross-device link in docker
-                        file_source = open(tmp_file_path, "rb")
-                        file_dest = open(dest_path, "wb")
-
-                        shutil.copyfileobj(file_source, file_dest, 4096)
-
-                        file_source.close()
-                        file_dest.close()
+                        shutil.copy2(tmp_file_path, dest_path)
 
                         os.remove(tmp_file_path)
 
@@ -185,7 +172,7 @@ def move_upload():
                                 dirs.append(obj)
 
                         return render_template("finalize.html", have_private_space=have_private_space,
-                                                       can_upload=can_upload, message=message, dirs=dirs)
+                                               can_upload=can_upload, message=message, dirs=dirs)
                 else:
                     os.remove(tmp_file_path)
 
