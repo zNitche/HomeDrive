@@ -2,7 +2,6 @@ import os
 import json
 from config import Config
 from werkzeug.utils import secure_filename
-import re
 
 
 def get_current_files_size(file_location):
@@ -40,13 +39,3 @@ def get_users():
         users = json.loads(accounts.read())
 
     return users
-
-
-def get_filename_from_request_stream_chunk(chunk):
-    filename = re.search('filename="(.+?)"', str(chunk))
-
-    if filename:
-        filename = filename.group(1)
-        filename.replace('"', "")
-
-    return filename

@@ -14,7 +14,6 @@ FILES_LOCATION = app.config["FILES_LOCATION"]
 MAX_SHARED_FILES_SIZE = app.config["MAX_SHARED_FILES_SIZE"]
 TMP_LOCATION = app.config["TMP_LOCATION"]
 PRIVATE_FILES_LOCATION = app.config["PRIVATE_FILES_LOCATION"]
-LEGACY_UPLOAD = app.config["LEGACY_UPLOAD"]
 UPLOAD_CHUNK_SIZE = app.config["UPLOAD_CHUNK_SIZE"]
 
 
@@ -222,27 +221,18 @@ def upload():
         if os.path.exists(tmp_file_path):
             os.remove(tmp_file_path)
 
-        if not LEGACY_UPLOAD:
-            found_filename = False
+        with open(tmp_file_path, "wb") as data:
 
-            with open(tmp_file_path, "wb") as data:
+            while True:
+                file_chunk = request.stream.read(UPLOAD_CHUNK_SIZE)
 
-                while True:
-                    file_chunk = request.stream.read(UPLOAD_CHUNK_SIZE)
+                if len(file_chunk) <= 0:
+                    break
 
-                    if not found_filename:
-                        filename = utils.get_filename_from_request_stream_chunk(file_chunk)
+                data.write(file_chunk)
 
-                        if filename:
-                            found_filename = True
-
-                    if len(file_chunk) <= 0:
-                        break
-
-                    data.write(file_chunk)
-        else:
-            file = request.files["file"]
-            file.save(tmp_file_path)
+        # Getting filename from POST request header
+        # filename = {k: v for k, v in request.headers.items()}["X-File-Name"]
 
         return redirect(url_for("files_operations.finalize_upload"))
 

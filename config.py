@@ -12,5 +12,4 @@ class Config:
     APP_HOST = "0.0.0.0"
     DEBUG_MODE = False
     APP_TIMEOUT = 0
-    LEGACY_UPLOAD = False
     UPLOAD_CHUNK_SIZE = 4096

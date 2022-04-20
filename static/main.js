@@ -37,19 +37,25 @@ function uploadCompleteHandler(event, success_endpoint) {
 
 function asyncSendFile(upload_endpoint, success_endpoint) {
     const xhr = new XMLHttpRequest();
-    const fd = new FormData();
+    // const fd = new FormData();
+
+    var file = document.getElementById("file-upload").files[0];
 
     xhr.upload.addEventListener("progress", uploadProgressHandler, false);
     xhr.addEventListener("load", uploadCompleteHandler.bind(null, event, success_endpoint), false);
 
-    fd.append("file", document.getElementById("file-upload").files[0]);
+    // fd.append("file", document.getElementById("file-upload").files[0]);
 
     try {
         xhr.open("POST", upload_endpoint, true);
 
-        document.getElementById('upload-progress-container').style.display = "flex";
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        xhr.setRequestHeader("X-File-Name", file.name);
+        xhr.setRequestHeader("Content-Type", file.type||"application/octet-stream");
 
-        xhr.send(fd);
+        document.getElementById("upload-progress-container").style.display = "flex";
+
+        xhr.send(file);
     }
 
     catch {
