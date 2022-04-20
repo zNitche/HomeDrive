@@ -43,9 +43,15 @@ function asyncSendFile(upload_endpoint, success_endpoint) {
 
     fd.append(document.getElementById("file_name").value, document.getElementById("file-upload").files[0]);
 
-    xhr.open("POST", upload_endpoint, true);
+    try {
+        xhr.open("POST", upload_endpoint, true);
 
-    document.getElementById('upload-progress-container').style.display = "flex";
+        document.getElementById('upload-progress-container').style.display = "flex";
 
-    xhr.send(fd);
+        xhr.send(fd);
+    }
+
+    catch {
+        document.getElementById("upload-message").innerHTML = "Error while uploading file";
+    }
 }
