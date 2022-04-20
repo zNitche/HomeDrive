@@ -2,6 +2,7 @@ function getFileName(myFile){
    var file = myFile.files[0];
 
    document.getElementById("file_name").innerHTML = file.name;
+   document.getElementById("file_name").value = file.name;
    document.getElementById("upload_button").style.display = "block";
 }
 
@@ -41,7 +42,7 @@ function asyncSendFile(upload_endpoint, success_endpoint) {
     xhr.upload.addEventListener("progress", uploadProgressHandler, false);
     xhr.addEventListener("load", uploadCompleteHandler.bind(null, event, success_endpoint), false);
 
-    fd.append(document.getElementById("file_name").value, document.getElementById("file-upload").files[0]);
+    fd.append("file", document.getElementById("file-upload").files[0]);
 
     try {
         xhr.open("POST", upload_endpoint, true);

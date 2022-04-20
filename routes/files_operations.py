@@ -223,15 +223,25 @@ def upload():
             os.remove(tmp_file_path)
 
         if not LEGACY_UPLOAD:
+            found_filename = False
+
             with open(tmp_file_path, "wb") as data:
+
                 while True:
                     file_chunk = request.stream.read(UPLOAD_CHUNK_SIZE)
+
+                    if not found_filename:
+                        filename = utils.get_filename_from_request_stream_chunk(file_chunk)
+
+                        if filename:
+                            found_filename = True
+
                     if len(file_chunk) <= 0:
                         break
 
                     data.write(file_chunk)
         else:
-            file = request.files["file-upload"]
+            file = request.files["file"]
             file.save(tmp_file_path)
 
         return redirect(url_for("files_operations.finalize_upload"))
