@@ -28,7 +28,10 @@ function closeDeleteModal(){
 }
 
 function uploadProgressHandler(event) {
-    document.getElementById('upload-progress').value = (event.loaded / event.total) * 100;
+    var progress = Math.floor((event.loaded / event.total) * 100);
+
+    document.getElementById('upload-progress-title').innerHTML = "Upload Progress (" + progress + "%):";
+    document.getElementById('upload-progress-bar').value = progress;
 }
 
 function uploadCompleteHandler(event, success_endpoint) {
@@ -37,14 +40,11 @@ function uploadCompleteHandler(event, success_endpoint) {
 
 function asyncSendFile(upload_endpoint, success_endpoint) {
     const xhr = new XMLHttpRequest();
-    // const fd = new FormData();
 
     var file = document.getElementById("file-upload").files[0];
 
     xhr.upload.addEventListener("progress", uploadProgressHandler, false);
     xhr.addEventListener("load", uploadCompleteHandler.bind(null, event, success_endpoint), false);
-
-    // fd.append("file", document.getElementById("file-upload").files[0]);
 
     try {
         xhr.open("POST", upload_endpoint, true);

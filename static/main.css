@@ -141,7 +141,8 @@ input.login-form-input {
 .upload-container .upload-file-button {
     display: none;
     background-color: #FFE400;
-    color: white;
+    color: black;
+    border: none;
     border-radius: 10px;
     width: 100%;
 }
@@ -157,7 +158,8 @@ input.login-form-input {
 .upload-container .finalize-upload-button {
     display: block;
     background-color: #FFE400;
-    color: white;
+    color: black;
+    border: none;
     border-radius: 10px;
     width: 100%;
 }
@@ -183,6 +185,10 @@ input.login-form-input {
     margin-bottom: 5px;
     padding: 20px 5px;
     flex-wrap: wrap;
+}
+
+.item:hover {
+    background-color: #696969;
 }
 
 .file-name {
