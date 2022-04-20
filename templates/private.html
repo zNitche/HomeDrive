@@ -50,7 +50,7 @@
                                     type="submit">Move</button>
                             <button id="delete-file-button" class="delete-button" onclick="showDeleteModal(this.value);"
                                     value="{{file}}" name="delete_file_modal" type="button">Delete</button>
-                            <button class="download-button" value="{{file}}" name="download_file" type="submit">Download</button>
+                            <button class="download-button" value="{{file}}" name="download_file" type="submit" formtarget="_blank">Download</button>
                         </span>
                     </div>
                 {% endfor %}

@@ -15,6 +15,7 @@ MAX_SHARED_FILES_SIZE = app.config["MAX_SHARED_FILES_SIZE"]
 TMP_LOCATION = app.config["TMP_LOCATION"]
 PRIVATE_FILES_LOCATION = app.config["PRIVATE_FILES_LOCATION"]
 UPLOAD_CHUNK_SIZE = app.config["UPLOAD_CHUNK_SIZE"]
+DOWNLOAD_PREVIEW_FILES_TYPES = app.config["DOWNLOAD_PREVIEW_FILES_TYPES"]
 
 
 @files_operations_.route("/files_operations/download_private/<file_name>", methods=["GET"])
@@ -27,7 +28,9 @@ def download_private(file_name):
         file_name = utils.decode_path(file_name)
         as_attachment = True
 
-        if file_name.endswith(".pdf") or file_name.endswith(".txt"):
+        file_extension = file_name.split(".")[-1].lower()
+
+        if file_extension.endswith(DOWNLOAD_PREVIEW_FILES_TYPES):
             as_attachment = False
 
         return send_file(os.path.join(PRIVATE_FILES_LOCATION, flask_login.current_user.id, file_name),
@@ -62,7 +65,9 @@ def delete_private(file_name):
 def download(file_name):
     as_attachment = True
 
-    if file_name.endswith(".pdf") or file_name.endswith(".txt"):
+    file_extension = file_name.split(".")[-1].lower()
+
+    if file_extension.endswith(DOWNLOAD_PREVIEW_FILES_TYPES):
         as_attachment = False
 
     return send_file(os.path.join(FILES_LOCATION, file_name), as_attachment=as_attachment,
