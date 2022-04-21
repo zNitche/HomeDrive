@@ -138,24 +138,7 @@ input.login-form-input {
     padding: 6px 12px;
 }
 
-.upload-container .upload-file-button {
-    display: none;
-    background-color: #FFE400;
-    color: black;
-    border: none;
-    border-radius: 10px;
-    width: 100%;
-}
-
-.upload-container .create-directory-button {
-    display: block;
-    background-color: #FFE400;
-    color: white;
-    border-radius: 10px;
-    width: 100%;
-}
-
-.upload-container .finalize-upload-button {
+.upload-container .action-button {
     display: block;
     background-color: #FFE400;
     color: black;
@@ -280,7 +263,7 @@ input.login-form-input {
     background-color: #e0c800;
 }
 
-.finalize-upload-button:hover {
+.action-button:hover {
     background-color: #e0c800;
 }
 
