@@ -28,14 +28,18 @@ def add_user(user_name, password, can_upload, can_delete, have_private_space, pr
         return 0
 
     users = load_users()
-    crypted_password = hash_password(password)
+    encrypted_password = hash_password(password)
 
-    users[user_name] = {"password": crypted_password, "have_private_space": have_private_space,
+    users[user_name] = {"password": encrypted_password, "have_private_space": have_private_space,
                         "can_delete_files": can_delete, "can_upload": can_upload, "max_files_size": private_space_size,
                         "admin": is_admin}
 
     save_to_json(users)
-    os.mkdir(os.path.join(Config.PRIVATE_FILES_LOCATION, user_name))
+
+    dir_path = os.path.join(Config.PRIVATE_FILES_LOCATION, user_name)
+
+    if not os.path.exists(dir_path):
+        os.mkdir(dir_path)
 
     return 1
 
@@ -48,7 +52,10 @@ def delete_user(user_name):
 
     del users[user_name]
 
-    shutil.rmtree(os.path.join(Config.PRIVATE_FILES_LOCATION, user_name))
+    dir_path = os.path.join(Config.PRIVATE_FILES_LOCATION, user_name)
+
+    if os.path.exists(dir_path):
+        shutil.rmtree(dir_path)
 
     save_to_json(users)
 
