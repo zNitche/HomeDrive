@@ -158,7 +158,7 @@ def move_upload():
                         dest_path = os.path.join(files_root_path, file_name)
 
                     else:
-                        dest_path = os.path.join(files_root_path, os.path.join(dir_name, file_name))
+                        dest_path = os.path.join(files_root_path, dir_name, file_name)
 
                     if not os.path.exists(dest_path):
                         shutil.copy2(tmp_file_path, dest_path)
@@ -290,9 +290,9 @@ def move_file_process():
                 file_name = secure_filename(file_name)
                 file_dir = secure_filename(file_dir)
 
-                file_path = os.path.join(objects_root, os.path.join(file_dir, file_name))
+                file_path = os.path.join(objects_root, file_dir, file_name)
 
-            dest_path = os.path.join(objects_root, os.path.join(dest_dir, file_name))
+            dest_path = os.path.join(objects_root, dest_dir, file_name)
 
             shutil.move(file_path, dest_path)
 
