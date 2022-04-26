@@ -56,21 +56,23 @@ function asyncSendFile(upload_endpoint, success_endpoint) {
 
     var file = document.getElementById("file-upload").files[0];
 
-    xhr.upload.addEventListener("progress", uploadProgressHandler, false);
+    if (file) {
+        xhr.upload.addEventListener("progress", uploadProgressHandler, false);
 
-    xhr.onloadend = function(event) {
-        uploadHandler(event, success_endpoint);
+        xhr.onloadend = function(event) {
+            uploadHandler(event, success_endpoint + "/" + file.name);
+        }
+
+        xhr.open("POST", upload_endpoint, true);
+
+        setupWindowForUpload();
+
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        xhr.setRequestHeader("X-File-Name", file.name);
+        xhr.setRequestHeader("Content-Type", file.type||"application/octet-stream");
+
+        xhr.send(file);
     }
-
-    xhr.open("POST", upload_endpoint, true);
-
-    setupWindowForUpload();
-
-    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-    xhr.setRequestHeader("X-File-Name", file.name);
-    xhr.setRequestHeader("Content-Type", file.type||"application/octet-stream");
-
-    xhr.send(file);
 }
 
 function setupWindowForUpload() {

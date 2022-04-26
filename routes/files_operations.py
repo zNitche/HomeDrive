@@ -184,9 +184,10 @@ def move_upload():
                     return redirect(url_for("content.home"))
 
 
-@files_operations_.route("/files_operations/upload/finalize", methods=["POST", "GET"])
+@files_operations_.route("/files_operations/upload/finalize", defaults={"file_name": ""}, methods=["GET"])
+@files_operations_.route("/files_operations/upload/finalize/<file_name>", methods=["GET"])
 @flask_login.login_required
-def finalize_upload():
+def finalize_upload(file_name):
     user_name = flask_login.current_user.id
     can_upload = permissions.can_upload(user_name)
     have_private_space = permissions.have_private_space(user_name)
@@ -202,7 +203,7 @@ def finalize_upload():
 
         if os.path.exists(os.path.join(TMP_LOCATION, user_name, "tmp_file")):
             return render_template("finalize.html", have_private_space=have_private_space, can_upload=can_upload,
-                                   message="", dirs=dirs)
+                                   message="", dirs=dirs, file_name=file_name)
 
         else:
             return redirect(url_for("content.home"))
