@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, redirect, url_for, request, send_file
+from flask import render_template, Blueprint, redirect, url_for, request, send_file, make_response, jsonify
 import flask_login
 from flask import current_app as app
 import permissions
@@ -223,11 +223,13 @@ def upload():
 
         tmp_file_path = os.path.join(TMP_LOCATION, user_name, "tmp_file")
 
+        # Getting filename from POST request header
+        # filename = request.headers["X-File-Name"]
+
         if os.path.exists(tmp_file_path):
             os.remove(tmp_file_path)
 
         with open(tmp_file_path, "wb") as data:
-
             while True:
                 file_chunk = request.stream.read(UPLOAD_CHUNK_SIZE)
 
@@ -236,13 +238,10 @@ def upload():
 
                 data.write(file_chunk)
 
-        # Getting filename from POST request header
-        # filename = {k: v for k, v in request.headers.items()}["X-File-Name"]
-
-        return redirect(url_for("files_operations.finalize_upload"))
+        return make_response(jsonify(message="OK"), 200)
 
     else:
-        return redirect(url_for("content.home"))
+        return make_response(jsonify(message="authorization error"), 401)
 
 
 @files_operations_.route("/files_operations/move/process", methods=["POST"])

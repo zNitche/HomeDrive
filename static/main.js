@@ -34,9 +34,21 @@ function uploadProgressHandler(event) {
     document.getElementById('upload-progress-bar').value = progress;
 }
 
-function uploadCompleteHandler(event, success_endpoint) {
+function completeUpload(success_endpoint) {
     window.removeEventListener("beforeunload", uploadWindowListener, false);
     window.location.replace(success_endpoint);
+}
+
+function uploadHandler(event, success_endpoint) {
+    var message = JSON.parse(event.currentTarget.responseText).message;
+
+    if (message == "OK") {
+        completeUpload(success_endpoint);
+    }
+
+    else {
+        document.getElementById("upload-message").innerHTML = message;
+    }
 }
 
 function asyncSendFile(upload_endpoint, success_endpoint) {
@@ -45,23 +57,20 @@ function asyncSendFile(upload_endpoint, success_endpoint) {
     var file = document.getElementById("file-upload").files[0];
 
     xhr.upload.addEventListener("progress", uploadProgressHandler, false);
-    xhr.addEventListener("load", uploadCompleteHandler.bind(null, event, success_endpoint), false);
 
-    try {
-        xhr.open("POST", upload_endpoint, true);
-
-        setupWindowForUpload();
-
-        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-        xhr.setRequestHeader("X-File-Name", file.name);
-        xhr.setRequestHeader("Content-Type", file.type||"application/octet-stream");
-
-        xhr.send(file);
+    xhr.onloadend = function(event) {
+        uploadHandler(event, success_endpoint);
     }
 
-    catch {
-        document.getElementById("upload-message").innerHTML = "Error while uploading file";
-    }
+    xhr.open("POST", upload_endpoint, true);
+
+    setupWindowForUpload();
+
+    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    xhr.setRequestHeader("X-File-Name", file.name);
+    xhr.setRequestHeader("Content-Type", file.type||"application/octet-stream");
+
+    xhr.send(file);
 }
 
 function setupWindowForUpload() {
