@@ -196,6 +196,10 @@ input.login-form-input {
     background-color: #14A76C;
 }
 
+.item-buttons .watch-button {
+    background-color: #1a64db;
+}
+
 .item-buttons .move-button {
     background-color: #f5bc42;
 }

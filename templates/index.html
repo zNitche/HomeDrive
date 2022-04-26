@@ -43,6 +43,9 @@
                             {% endif %}
                             <button id="download-button" class="download-button" value="{{file}}"
                                     name="download_file" type="submit" formtarget="_blank">Download</button>
+                            {% if file.endswith(video_types) %}
+                                <button class="watch-button" value="{{ file }}" name="watch_video" type="submit">Watch</button>
+                            {% endif %}
                         </span>
                     </div>
                 {%endfor%}

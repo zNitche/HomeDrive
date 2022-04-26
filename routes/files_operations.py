@@ -40,6 +40,22 @@ def download_private(file_name):
         return redirect(url_for("content.home"))
 
 
+@files_operations_.route("/files_operations/watch_private/<file_name>", methods=["GET"])
+@flask_login.login_required
+def watch_private(file_name):
+    user_name = flask_login.current_user.id
+    have_private_space = permissions.have_private_space(user_name)
+
+    if have_private_space:
+        file_name = utils.decode_path(file_name)
+
+        return send_file(os.path.join(PRIVATE_FILES_LOCATION, flask_login.current_user.id, file_name),
+                         as_attachment=False, attachment_filename=file_name, cache_timeout=0)
+
+    else:
+        return redirect(url_for("content.home"))
+
+
 @files_operations_.route("/files_operations/delete_private/<file_name>", methods=["GET"])
 @flask_login.login_required
 def delete_private(file_name):
@@ -85,6 +101,15 @@ def delete(file_name):
         os.remove(os.path.join(FILES_LOCATION, file_name))
 
     return redirect(url_for("content.home"))
+
+
+@files_operations_.route("/files_operations/watch/<file_name>", methods=["GET"])
+@flask_login.login_required
+def watch(file_name):
+    file_name = utils.decode_path(file_name)
+
+    return send_file(os.path.join(FILES_LOCATION, file_name), as_attachment=False, attachment_filename=file_name,
+                     cache_timeout=0)
 
 
 @files_operations_.route("/files_operations/create_dir/process", methods=["POST"])

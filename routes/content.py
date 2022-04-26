@@ -9,6 +9,7 @@ import permissions
 FILES_LOCATION = app.config["FILES_LOCATION"]
 MAX_SHARED_FILES_SIZE = app.config["MAX_SHARED_FILES_SIZE"]
 PRIVATE_FILES_LOCATION = app.config["PRIVATE_FILES_LOCATION"]
+VIDEO_TYPES = app.config["VIDEO_TYPES"]
 
 
 content_ = Blueprint("content", __name__, template_folder='template', static_folder='static')
@@ -29,7 +30,9 @@ def home():
         have_private_space = permissions.have_private_space(user_name)
 
         return render_template("index.html", files=files, max_size=max_size, current_size=current_size,
-                               can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space)
+                               can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space,
+                               video_types=VIDEO_TYPES)
+
     else:
         return redirect(url_for("auth.login"))
 
@@ -59,7 +62,9 @@ def private():
         current_size = f"{str(round(utils.get_current_files_size(os.path.join(PRIVATE_FILES_LOCATION, user_name)) / 1000000000, 2))} GB"
         max_size = f"{max_private_size / 1000000000} GB"
 
-        return render_template("private.html", files=files, dirs=dirs, max_size=max_size, current_size=current_size)
+        return render_template("private.html", files=files, dirs=dirs, max_size=max_size, current_size=current_size,
+                               video_types=VIDEO_TYPES)
+
     else:
         return redirect(url_for("content.home"))
 
@@ -153,6 +158,9 @@ def operations():
     elif request.args.get("delete_file"):
         return redirect(url_for("files_operations.delete", file_name=request.args.get("delete_file")))
 
+    elif request.args.get("watch_video"):
+        return redirect(url_for("files_operations.watch", file_name=request.args.get("watch_video")))
+
 
 @content_.route("/content/operations_private", methods=["GET", "POST"])
 @flask_login.login_required
@@ -172,3 +180,6 @@ def operations_private():
 
         elif request.args.get("move_file"):
             return redirect(url_for("content.move_file", file_name=request.args.get("move_file")))
+
+        elif request.args.get("watch_video"):
+            return redirect(url_for("files_operations.watch_private", file_name=request.args.get("watch_video")))
