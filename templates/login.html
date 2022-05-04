@@ -4,7 +4,7 @@
     <div class="login-container">
         <div class="login-content">
             <p class="login-title">HomeDrive</p>
-            <form action="{{ url_for('auth.check') }}" method="POST">
+            <form action="{{ url_for('auth.login') }}" method="POST">
                 <input class="login-form-input" type="text" id="login" name="user_name" placeholder="login" />
                 <input class="login-form-input" type="password" id="password" name="password" placeholder="password" />
                 <button class="login-button" type="submit">Log in</button>
