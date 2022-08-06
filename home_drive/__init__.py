@@ -1,9 +1,10 @@
 from flask import Flask
 import flask_login
-from home_drive.users.user import User
-from home_drive.users import users_accounts
-import permissions
+from flask_sqlalchemy import SQLAlchemy
 import os
+
+
+db = SQLAlchemy()
 
 
 def create_app():
@@ -14,26 +15,23 @@ def create_app():
 
     login_manager = flask_login.LoginManager()
     login_manager.init_app(app)
-    users = users_accounts.UsersAccounts.users
+
+    db.init_app(app)
+
+    from home_drive import models
 
     @login_manager.user_loader
-    def user_loader(username):
-
-        if username not in users:
-            return
-
-        user = User(permissions.can_delete(username), permissions.have_private_space(username),
-                         permissions.can_upload(username))
-        user.id = username
-        return user
+    def user_loader(user_id):
+        return models.User.query.get(int(user_id))
 
     with app.app_context():
-        from home_drive.routes import content, auth, files_operations, admin, errors
+        db.create_all()
 
-        app.register_blueprint(content.content_)
-        app.register_blueprint(auth.auth_)
-        app.register_blueprint(files_operations.files_operations_)
-        app.register_blueprint(admin.admin_)
-        app.register_blueprint(errors.errors_)
+        # from home_drive.routes import content, auth, files_operations, errors
+        #
+        # app.register_blueprint(content.content_)
+        # app.register_blueprint(auth.auth_)
+        # app.register_blueprint(files_operations.files_operations_)
+        # app.register_blueprint(errors.errors_)
 
         return app

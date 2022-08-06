@@ -3,7 +3,6 @@ from flask import current_app as app
 import flask_login
 import os
 from home_drive import utils
-import permissions
 
 
 FILES_LOCATION = app.config["FILES_LOCATION"]

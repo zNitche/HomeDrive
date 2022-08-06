@@ -1,9 +1,7 @@
 from flask import render_template, request, redirect, url_for, Blueprint
 import flask_login
-from home_drive.users.user import User
-from home_drive.users import users_accounts as users
-import permissions
 from passlib.hash import sha256_crypt
+from home_drive.models import User
 
 
 auth_ = Blueprint("auth", __name__, template_folder='template', static_folder='static')
@@ -21,18 +19,16 @@ def login():
 
     else:
         try:
-            users_accounts = users.UsersAccounts.users
-
             username = request.form["user_name"]
+            password = request.form["password"]
 
-            if sha256_crypt.verify(request.form["password"], users_accounts[username]["password"]):
-                user = User(permissions.can_delete(username), permissions.have_private_space(username),
-                            permissions.can_upload(username))
-                user.id = username
+            user = User.query.filter_by(username=username).first()
 
+            if user and sha256_crypt.verify(password, user.password):
                 flask_login.login_user(user)
 
                 return redirect(url_for("content.home"))
+
             else:
                 message = "Wrong username or password"
                 return render_template("login.html", message=message)

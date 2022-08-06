@@ -32,10 +32,3 @@ def decode_path(path_name):
         path_name = os.path.join(dir, file)
 
     return path_name
-
-
-def get_users():
-    with open(os.path.join(Config.CURRENT_DIR, "users", "users.json"), "r") as accounts:
-        users = json.loads(accounts.read())
-
-    return users
