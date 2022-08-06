@@ -5,7 +5,7 @@ import os
 dotenv.load_dotenv(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".env"))
 
 
-from __init__ import create_app
+from home_drive import create_app
 
 
 app = create_app()

@@ -1,4 +1,4 @@
-from users.users_accounts import UsersAccounts
+from home_drive.users.users_accounts import UsersAccounts
 
 
 def can_delete(username):

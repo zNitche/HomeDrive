@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, Blueprint
 import flask_login
-from users.user import User
-from users import users_accounts as users
+from home_drive.users.user import User
+from home_drive.users import users_accounts as users
 import permissions
 from passlib.hash import sha256_crypt
 

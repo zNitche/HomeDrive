@@ -12,14 +12,14 @@ def hash_password(plain_password):
 
 
 def load_users():
-    with open(os.path.join(Config.CURRENT_DIR, "users", "users.json"), "r") as accounts:
+    with open(os.path.join(Config.CURRENT_DIR, "home_drive", "users", "users.json"), "r") as accounts:
         users = json.loads(accounts.read())
 
     return users
 
 
 def save_to_json(users):
-    with open(os.path.join(Config.CURRENT_DIR, "users", "users.json"), "w") as accounts:
+    with open(os.path.join(Config.CURRENT_DIR, "home_drive", "users", "users.json"), "w") as accounts:
         accounts.write(json.dumps(users, indent=4))
 
 

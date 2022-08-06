@@ -1,7 +1,7 @@
 from flask import Flask
 import flask_login
-from users.user import User
-from users import users_accounts
+from home_drive.users.user import User
+from home_drive.users import users_accounts
 import permissions
 import os
 
@@ -28,7 +28,7 @@ def create_app():
         return user
 
     with app.app_context():
-        from routes import content, auth, files_operations, admin, errors
+        from home_drive.routes import content, auth, files_operations, admin, errors
 
         app.register_blueprint(content.content_)
         app.register_blueprint(auth.auth_)
