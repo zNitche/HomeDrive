@@ -22,14 +22,7 @@ def home():
         current_size = f"{str(round(utils.get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
         max_size = f"{MAX_SHARED_FILES_SIZE / 1000000000} GB"
 
-        user_name = flask_login.current_user.id
-
-        can_delete = permissions.can_delete(user_name)
-        can_upload = permissions.can_upload(user_name)
-        have_private_space = permissions.have_private_space(user_name)
-
         return render_template("index.html", files=files, max_size=max_size, current_size=current_size,
-                               can_delete=can_delete, can_upload=can_upload, have_private_space=have_private_space,
                                video_types=VIDEO_TYPES)
 
     else:
@@ -43,7 +36,7 @@ def private():
         files = []
         dirs = []
 
-        user_name = flask_login.current_user.id
+        user_name = flask_login.current_user.username
         utils.check_dir(os.path.join(PRIVATE_FILES_LOCATION, user_name))
 
         objects_path = os.path.join(PRIVATE_FILES_LOCATION, user_name)
@@ -56,7 +49,7 @@ def private():
             else:
                 files.append(obj)
 
-        max_private_size = permissions.max_private_files_size(user_name)
+        max_private_size = flask_login.current_user.max_files_size
 
         current_size = f"{str(round(utils.get_current_files_size(os.path.join(PRIVATE_FILES_LOCATION, user_name)) / 1000000000, 2))} GB"
         max_size = f"{max_private_size / 1000000000} GB"
@@ -71,17 +64,14 @@ def private():
 @content_.route("/upload")
 @flask_login.login_required
 def upload_view():
-    user_name = flask_login.current_user.id
+    current_user = flask_login.current_user
 
-    if permissions.have_private_space(user_name) or permissions.can_upload(user_name):
-        have_private_space = permissions.have_private_space(user_name)
-        can_upload = permissions.can_upload(user_name)
-
+    if current_user.have_private_space or current_user.can_upload:
         current_size = f"{str(round(utils.get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
         max_size = f"{MAX_SHARED_FILES_SIZE / 1000000000} GB"
 
-        return render_template("upload.html", max_size=max_size, current_size=current_size,
-                                   have_private_space=have_private_space, can_upload=can_upload)
+        return render_template("upload.html", max_size=max_size, current_size=current_size)
+
     else:
         return redirect(url_for("content.home"))
 
@@ -89,11 +79,11 @@ def upload_view():
 @content_.route("/private/create_dir")
 @flask_login.login_required
 def new_directory_view():
-    user_name = flask_login.current_user.id
+    current_user = flask_login.current_user
 
-    if permissions.have_private_space(user_name):
-        have_private_space = permissions.have_private_space(user_name)
-        can_upload = permissions.can_upload(user_name)
+    if current_user.have_private_space:
+        have_private_space = current_user.have_private_space
+        can_upload = current_user.can_upload
 
         current_size = f"{str(round(utils.get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
         max_size = f"{MAX_SHARED_FILES_SIZE / 1000000000} GB"
@@ -107,23 +97,25 @@ def new_directory_view():
 @content_.route("/private/<dir_name>")
 @flask_login.login_required
 def directory_content(dir_name):
-    user_name = flask_login.current_user.id
+    current_user = flask_login.current_user
 
-    if permissions.have_private_space(user_name):
-        objects_path = os.path.join(PRIVATE_FILES_LOCATION, user_name)
+    if current_user.have_private_space:
+        objects_path = os.path.join(PRIVATE_FILES_LOCATION, current_user.username)
 
         if os.path.exists(os.path.join(objects_path, dir_name)):
             files = os.listdir(os.path.join(objects_path, dir_name))
 
-            max_private_size = permissions.max_private_files_size(user_name)
+            max_private_size = current_user.max_files_size
 
-            current_size = f"{str(round(utils.get_current_files_size(os.path.join(PRIVATE_FILES_LOCATION, user_name)) / 1000000000, 2))} GB"
+            current_size = f"{str(round(utils.get_current_files_size(os.path.join(PRIVATE_FILES_LOCATION, current_user.username)) / 1000000000, 2))} GB"
             max_size = f"{max_private_size / 1000000000} GB"
 
             return render_template("directory_content.html", files=files, max_size=max_size, current_size=current_size,
                                    dir_name=dir_name)
+
         else:
             return redirect(url_for("content.private"))
+
     else:
         return redirect(url_for("content.home"))
 
@@ -131,10 +123,10 @@ def directory_content(dir_name):
 @content_.route("/content/move/<file_name>", methods=["GET", "POST"])
 @flask_login.login_required
 def move_file(file_name):
-    user_name = flask_login.current_user.id
+    current_user = flask_login.current_user
 
-    if permissions.have_private_space(user_name):
-        objects_path = os.path.join(PRIVATE_FILES_LOCATION, user_name)
+    if current_user.have_private_space:
+        objects_path = os.path.join(PRIVATE_FILES_LOCATION, current_user.username)
 
         dirs = ["/"]
         objects = os.listdir(objects_path)
@@ -144,6 +136,7 @@ def move_file(file_name):
                 dirs.append(obj)
 
         return render_template("move_file.html", dirs=dirs, file_name=file_name)
+
     else:
         return redirect(url_for("content.home"))
 
@@ -164,10 +157,9 @@ def operations():
 @content_.route("/content/operations_private", methods=["GET", "POST"])
 @flask_login.login_required
 def operations_private():
-    user_name = flask_login.current_user.id
-    have_private_space = permissions.have_private_space(user_name)
+    current_user = flask_login.current_user
 
-    if have_private_space:
+    if current_user.have_private_space:
         if request.args.get("download_file"):
             return redirect(url_for("files_operations.download_private", file_name=request.args.get("download_file")))
 

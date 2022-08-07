@@ -13,7 +13,7 @@
         <div class="navbar">
             <span class="main-title">HomeDrive</span>
             <form action="{{ url_for('auth.logout') }}" method="POST">
-                {% if can_upload %}
+                {% if current_user.can_upload %}
                      <a href="{{ url_for('content.upload_view') }}">
                         <button type="button" class="upload-button">
                             Upload
@@ -27,7 +27,7 @@
         </div>
         <div class="mode-panel">
             <a href="{{ url_for('content.home') }}">Shared</a>
-            {% if have_private_space %}
+            {% if current_user.have_private_space %}
                 <a href="{{ url_for('content.private') }}">Private</a>
             {% endif %}
         </div>
@@ -37,7 +37,7 @@
                     <div class="item">
                         {{file}}
                         <span class="item-buttons">
-                            {% if can_delete %}
+                            {% if current_user.can_delete_files %}
                                 <button id="delete-button" class="delete-button" onclick="showDeleteModal(this.value);"
                                         value="{{file}}" name="delete_file_modal" type="button">Delete</button>
                             {% endif %}

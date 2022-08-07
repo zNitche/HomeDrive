@@ -27,11 +27,11 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-        # from home_drive.routes import content, auth, files_operations, errors
-        #
-        # app.register_blueprint(content.content_)
-        # app.register_blueprint(auth.auth_)
-        # app.register_blueprint(files_operations.files_operations_)
-        # app.register_blueprint(errors.errors_)
+        from home_drive.routes import content, auth, files_operations, errors
+
+        app.register_blueprint(content.content_)
+        app.register_blueprint(auth.auth_)
+        app.register_blueprint(files_operations.files_operations_)
+        app.register_blueprint(errors.errors_)
 
         return app

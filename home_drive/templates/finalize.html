@@ -20,13 +20,13 @@
                 <p>
                     <input type="text" id="file_name" name="file_name" value="{{ file_name }}">
                 </p>
-                {% if can_upload %}
+                {% if current_user.can_upload %}
                     <input type="radio" id="shared_radio" name="space" value="shared" checked="checked"
                     onchange="showDirSelect(this.value);">
                     <label for="shared_radio">shared</label><br>
                 {% endif %}
 
-                {% if have_private_space %}
+                {% if current_user.have_private_space %}
                     <input type="radio" id="private_radio" name="space" value="private" checked="checked"
                     onchange="showDirSelect(this.value);">
                     <label for="private_radio">private</label>
