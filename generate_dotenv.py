@@ -5,7 +5,7 @@ def generate(path):
     args = {
         "MYSQL_ROOT_PASSWORD": "test_pass",
         "MYSQL_SERVER_PORT": "3306",
-        "MYSQL_SERVER_HOST": "127.0.0.1",
+        "MYSQL_SERVER_HOST": "db",
         "DB_NAME": "app_db",
         "DB_PATH": "./database/mysql"
     }

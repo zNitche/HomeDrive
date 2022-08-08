@@ -3,18 +3,30 @@
 
 ---
 ### Install
-1. Clone this repo
-2. Create users accounts using `manage_users.py` (this includes user's permissions settings)
-3. Build docker image `sudo docker build -t homedrive .`
-4. Run docker container
+1. Clone this repo.
+2. Generate `.env` config file.
 ```
-sudo docker run --name=homedrive -d -v <path_to_storage_on_host>:/HomeDrive/storage -p 8080:8080 homedrive
+python3 generate_dotenv.py
 ```
-5. Make docker container restart after reboot `sudo docker update --restart unless-stopped homedrive`
+3. Run docker container.
+```
+sudo docker compose up -d
+```
+4. Bash into container.
+```
+sudo docker container exec -it home_drive_web_app bash
+```
+5. Create users accounts using `users_manager.py` (this includes user's permissions settings).
+
+### Dev
+1. Change `MYSQL_SERVER_HOST` in `.env` to `127.0.0.1`
+2. Run DEV MySQL container.
+```
+sudo docker compose -f docker-compose-dev.yml up
+```
 
 ### Usage
-1. Login (Test user creds: `login = user | password = test`)
-2. Use `Shared/Private` switch to switch between shared and private space (if current user has private space)
-3. Use `Download/Delete` buttons to manage files (download and delete them)
-4. Use `Create Directory` button to create directory inside your private space
+1. Use `Shared/Private` switch to switch between shared and private space (if current user has private space)
+2. Use `Download/Delete` buttons to manage files (download and delete them)
+3. Use `Create Directory` button to create directory inside your private space
 4. Use `Upload` button to upload file to shared or private space (or selected directory inside private space)

@@ -15,6 +15,7 @@ services:
   web_app:
     depends_on:
       - db
+    container_name: home_drive_web_app
     build: .
     restart: unless-stopped
     ports:
