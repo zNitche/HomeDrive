@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, redirect, url_for, request
+from flask import render_template, Blueprint, redirect, url_for, request, flash
 from flask import current_app as app
 import flask_login
 import os
@@ -78,8 +78,6 @@ def upload_view():
 @flask_login.login_required
 @private_space_required
 def new_directory_view():
-    current_user = flask_login.current_user
-
     current_size = f"{str(round(utils.get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
     max_size = f"{MAX_SHARED_FILES_SIZE / 1000000000} GB"
 

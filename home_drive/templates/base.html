@@ -9,6 +9,19 @@
         <title>HomeDrive</title>
     </head>
     <body>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flashed-messages-container">
+              {% for category, message in messages %}
+                <div class="flashed-message-container flashed-message-container-{{ category }}">
+                    <span>
+                        {{ message }}
+                    </span>
+                </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
         {% block content %}
         {% endblock %}
     </body>

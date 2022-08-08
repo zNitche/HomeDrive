@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, redirect, url_for, request, send_file, make_response, jsonify
+from flask import render_template, Blueprint, redirect, url_for, request, send_file, make_response, jsonify, flash
 import flask_login
 from flask import current_app as app
 import shutil
@@ -108,22 +108,27 @@ def create_new_directory():
     current_user = flask_login.current_user
 
     dir_name = request.form["dir_name"]
+    dir_name = secure_filename(dir_name)
 
     if dir_name:
         path_to_user_files = os.path.join(PRIVATE_FILES_LOCATION, current_user.username)
 
         if dir_name in os.listdir(path_to_user_files):
-            message = "Directory exists"
-            return render_template("directory.html")
+            flash("Directory exists", "error")
+
+            return redirect(url_for("content.directory_content"))
 
         else:
-            os.mkdir(os.path.join(path_to_user_files, secure_filename(dir_name)))
+            os.mkdir(os.path.join(path_to_user_files, dir_name))
+
+            flash(f"Created directory {dir_name}", "success")
 
             return redirect(url_for("content.private"))
 
     else:
-        message = "Directory name can't be empty"
-        return render_template("directory.html")
+        flash("Directory name can't be empty", "error")
+
+        return redirect(url_for("content.directory_content"))
 
 
 @files_operations.route("/files_operations/upload/finalize/move", methods=["POST", "GET"])
@@ -151,9 +156,12 @@ def move_upload():
                         os.remove(tmp_file_path)
 
                         return redirect(url_for("content.home"))
+
                     else:
-                        message = "File already exists, choose different name"
-                        return render_template("finalize.html")
+                        flash("File already exists, choose different name", "error")
+
+                        return redirect(url_for("files_operations.finalize_upload"))
+
                 else:
                     os.remove(tmp_file_path)
 
@@ -178,16 +186,9 @@ def move_upload():
 
                         return redirect(url_for("content.private"))
                     else:
-                        message = "File already exists, choose different name"
-                        dirs = ["/"]
+                        flash("File already exists, choose different name", "error")
 
-                        objects = os.listdir(files_root_path)
-
-                        for obj in objects:
-                            if os.path.isdir(os.path.join(files_root_path, obj)):
-                                dirs.append(obj)
-
-                        return render_template("finalize.html", dirs=dirs)
+                        return redirect(url_for("files_operations.finalize_upload"))
 
                 else:
                     os.remove(tmp_file_path)
@@ -309,9 +310,9 @@ def move_file_process():
             return redirect(url_for("content.private"))
 
         else:
-            message = "choose directory first"
+            flash("Choose directory first", "error")
 
-            return render_template("move_file.html")
+            return redirect(url_for("content.move_file"))
 
     else:
         return redirect(url_for("content.home"))
