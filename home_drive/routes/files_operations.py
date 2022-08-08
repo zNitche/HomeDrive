@@ -8,7 +8,7 @@ from home_drive import utils
 from home_drive.decorators import private_space_required
 
 
-files_operations_ = Blueprint("files_operations", __name__, template_folder='template', static_folder='static')
+files_operations = Blueprint("files_operations", __name__, template_folder='template', static_folder='static')
 
 
 FILES_LOCATION = app.config["FILES_LOCATION"]
@@ -19,7 +19,7 @@ UPLOAD_CHUNK_SIZE = app.config["UPLOAD_CHUNK_SIZE"]
 DOWNLOAD_PREVIEW_FILES_TYPES = app.config["DOWNLOAD_PREVIEW_FILES_TYPES"]
 
 
-@files_operations_.route("/files_operations/download_private/<file_name>", methods=["GET"])
+@files_operations.route("/files_operations/download_private/<file_name>", methods=["GET"])
 @flask_login.login_required
 @private_space_required
 def download_private(file_name):
@@ -37,7 +37,7 @@ def download_private(file_name):
                      as_attachment=as_attachment, attachment_filename=file_name, cache_timeout=0)
 
 
-@files_operations_.route("/files_operations/watch_private/<file_name>", methods=["GET"])
+@files_operations.route("/files_operations/watch_private/<file_name>", methods=["GET"])
 @flask_login.login_required
 @private_space_required
 def watch_private(file_name):
@@ -47,7 +47,7 @@ def watch_private(file_name):
                      as_attachment=False, attachment_filename=file_name, cache_timeout=0)
 
 
-@files_operations_.route("/files_operations/delete_private/<file_name>", methods=["GET"])
+@files_operations.route("/files_operations/delete_private/<file_name>", methods=["GET"])
 @flask_login.login_required
 @private_space_required
 def delete_private(file_name):
@@ -66,7 +66,7 @@ def delete_private(file_name):
     return redirect(url_for("content.private"))
 
 
-@files_operations_.route("/files_operations/download/<file_name>", methods=["GET"])
+@files_operations.route("/files_operations/download/<file_name>", methods=["GET"])
 @flask_login.login_required
 def download(file_name):
     as_attachment = True
@@ -81,7 +81,7 @@ def download(file_name):
                      cache_timeout=0)
 
 
-@files_operations_.route("/files_operations/delete/<file_name>", methods=["GET"])
+@files_operations.route("/files_operations/delete/<file_name>", methods=["GET"])
 @flask_login.login_required
 def delete(file_name):
     current_user = flask_login.current_user
@@ -92,7 +92,7 @@ def delete(file_name):
     return redirect(url_for("content.home"))
 
 
-@files_operations_.route("/files_operations/watch/<file_name>", methods=["GET"])
+@files_operations.route("/files_operations/watch/<file_name>", methods=["GET"])
 @flask_login.login_required
 def watch(file_name):
     file_name = utils.decode_path(file_name)
@@ -101,7 +101,7 @@ def watch(file_name):
                      cache_timeout=0)
 
 
-@files_operations_.route("/files_operations/create_dir/process", methods=["POST"])
+@files_operations.route("/files_operations/create_dir/process", methods=["POST"])
 @flask_login.login_required
 @private_space_required
 def create_new_directory():
@@ -126,7 +126,7 @@ def create_new_directory():
         return render_template("directory.html")
 
 
-@files_operations_.route("/files_operations/upload/finalize/move", methods=["POST", "GET"])
+@files_operations.route("/files_operations/upload/finalize/move", methods=["POST", "GET"])
 @flask_login.login_required
 def move_upload():
     current_user = flask_login.current_user
@@ -195,8 +195,8 @@ def move_upload():
                     return redirect(url_for("content.home"))
 
 
-@files_operations_.route("/files_operations/upload/finalize", defaults={"file_name": ""}, methods=["GET"])
-@files_operations_.route("/files_operations/upload/finalize/<file_name>", methods=["GET"])
+@files_operations.route("/files_operations/upload/finalize", defaults={"file_name": ""}, methods=["GET"])
+@files_operations.route("/files_operations/upload/finalize/<file_name>", methods=["GET"])
 @flask_login.login_required
 def finalize_upload(file_name):
     current_user = flask_login.current_user
@@ -222,7 +222,7 @@ def finalize_upload(file_name):
         return redirect(url_for("content.home"))
 
 
-@files_operations_.route("/files_operations/upload", methods=["POST"])
+@files_operations.route("/files_operations/upload", methods=["POST"])
 @flask_login.login_required
 def upload():
     current_user = flask_login.current_user
@@ -255,7 +255,7 @@ def upload():
         return make_response(jsonify(message="authorization error"), 401)
 
 
-@files_operations_.route("/files_operations/move/process", methods=["POST"])
+@files_operations.route("/files_operations/move/process", methods=["POST"])
 @flask_login.login_required
 def move_file_process():
     # TODO rework this one

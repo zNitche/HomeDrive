@@ -12,10 +12,10 @@ PRIVATE_FILES_LOCATION = app.config["PRIVATE_FILES_LOCATION"]
 VIDEO_TYPES = app.config["VIDEO_TYPES"]
 
 
-content_ = Blueprint("content", __name__, template_folder='template', static_folder='static')
+content = Blueprint("content", __name__, template_folder='template', static_folder='static')
 
 
-@content_.route("/")
+@content.route("/")
 def home():
     if flask_login.current_user.is_authenticated:
         files = os.listdir(FILES_LOCATION)
@@ -30,7 +30,7 @@ def home():
         return redirect(url_for("auth.login"))
 
 
-@content_.route("/private")
+@content.route("/private")
 @flask_login.login_required
 @private_space_required
 def private():
@@ -59,7 +59,7 @@ def private():
                            video_types=VIDEO_TYPES)
 
 
-@content_.route("/upload")
+@content.route("/upload")
 @flask_login.login_required
 def upload_view():
     current_user = flask_login.current_user
@@ -74,7 +74,7 @@ def upload_view():
         return redirect(url_for("content.home"))
 
 
-@content_.route("/private/create_dir")
+@content.route("/private/create_dir")
 @flask_login.login_required
 @private_space_required
 def new_directory_view():
@@ -86,7 +86,7 @@ def new_directory_view():
     return render_template("directory.html", max_size=max_size, current_size=current_size)
 
 
-@content_.route("/private/<dir_name>")
+@content.route("/private/<dir_name>")
 @flask_login.login_required
 @private_space_required
 def directory_content(dir_name):
@@ -109,7 +109,7 @@ def directory_content(dir_name):
         return redirect(url_for("content.private"))
 
 
-@content_.route("/content/move/<file_name>", methods=["GET", "POST"])
+@content.route("/content/move/<file_name>", methods=["GET", "POST"])
 @flask_login.login_required
 @private_space_required
 def move_file(file_name):
@@ -127,7 +127,7 @@ def move_file(file_name):
     return render_template("move_file.html", dirs=dirs, file_name=file_name)
 
 
-@content_.route("/content/operations", methods=["GET", "POST"])
+@content.route("/content/operations", methods=["GET", "POST"])
 @flask_login.login_required
 def operations():
     if request.args.get("download_file"):
@@ -140,7 +140,7 @@ def operations():
         return redirect(url_for("files_operations.watch", file_name=request.args.get("watch_video")))
 
 
-@content_.route("/content/operations_private", methods=["GET", "POST"])
+@content.route("/content/operations_private", methods=["GET", "POST"])
 @flask_login.login_required
 @private_space_required
 def operations_private():

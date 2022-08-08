@@ -4,10 +4,10 @@ from passlib.hash import sha256_crypt
 from home_drive.models import User
 
 
-auth_ = Blueprint("auth", __name__, template_folder='template', static_folder='static')
+auth = Blueprint("auth", __name__, template_folder='template', static_folder='static')
 
 
-@auth_.route("/auth/login", methods=["GET", "POST"])
+@auth.route("/auth/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
         if flask_login.current_user.is_authenticated:
@@ -38,7 +38,7 @@ def login():
             return render_template("login.html", message=message)
 
 
-@auth_.route("/auth/logout", methods=["POST", "GET"])
+@auth.route("/auth/logout", methods=["POST", "GET"])
 @flask_login.login_required
 def logout():
     flask_login.logout_user()

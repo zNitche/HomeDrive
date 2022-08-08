@@ -7,6 +7,15 @@ import os
 db = SQLAlchemy()
 
 
+def register_blueprints(app):
+    from home_drive.routes import content, auth, files_operations, errors
+
+    app.register_blueprint(content.content)
+    app.register_blueprint(auth.auth)
+    app.register_blueprint(files_operations.files_operations)
+    app.register_blueprint(errors.errors)
+
+
 def create_app():
     app = Flask(__name__, instance_relative_config=False)
     app.secret_key = os.urandom(25)
@@ -27,11 +36,6 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-        from home_drive.routes import content, auth, files_operations, errors
-
-        app.register_blueprint(content.content_)
-        app.register_blueprint(auth.auth_)
-        app.register_blueprint(files_operations.files_operations_)
-        app.register_blueprint(errors.errors_)
+        register_blueprints(app)
 
         return app
