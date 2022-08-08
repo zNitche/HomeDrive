@@ -1,10 +1,11 @@
 from flask import render_template, Blueprint, redirect, url_for, request, send_file, make_response, jsonify
 import flask_login
 from flask import current_app as app
-from home_drive import utils
 import shutil
 import os
 from werkzeug.utils import secure_filename
+from home_drive import utils
+from home_drive.decorators import private_space_required
 
 
 files_operations_ = Blueprint("files_operations", __name__, template_folder='template', static_folder='static')
@@ -20,58 +21,47 @@ DOWNLOAD_PREVIEW_FILES_TYPES = app.config["DOWNLOAD_PREVIEW_FILES_TYPES"]
 
 @files_operations_.route("/files_operations/download_private/<file_name>", methods=["GET"])
 @flask_login.login_required
+@private_space_required
 def download_private(file_name):
     current_user = flask_login.current_user
-    have_private_space = current_user.have_private_space
 
-    if have_private_space:
-        file_name = utils.decode_path(file_name)
-        as_attachment = True
+    file_name = utils.decode_path(file_name)
+    as_attachment = True
 
-        file_extension = file_name.split(".")[-1].lower()
+    file_extension = file_name.split(".")[-1].lower()
 
-        if file_extension.endswith(DOWNLOAD_PREVIEW_FILES_TYPES):
-            as_attachment = False
+    if file_extension.endswith(DOWNLOAD_PREVIEW_FILES_TYPES):
+        as_attachment = False
 
-        return send_file(os.path.join(PRIVATE_FILES_LOCATION, current_user.username, file_name),
-                         as_attachment=as_attachment, attachment_filename=file_name, cache_timeout=0)
-
-    else:
-        return redirect(url_for("content.home"))
+    return send_file(os.path.join(PRIVATE_FILES_LOCATION, current_user.username, file_name),
+                     as_attachment=as_attachment, attachment_filename=file_name, cache_timeout=0)
 
 
 @files_operations_.route("/files_operations/watch_private/<file_name>", methods=["GET"])
 @flask_login.login_required
+@private_space_required
 def watch_private(file_name):
-    current_user = flask_login.current_user
-    have_private_space = current_user.have_private_space
+    file_name = utils.decode_path(file_name)
 
-    if have_private_space:
-        file_name = utils.decode_path(file_name)
-
-        return send_file(os.path.join(PRIVATE_FILES_LOCATION, flask_login.current_user.id, file_name),
-                         as_attachment=False, attachment_filename=file_name, cache_timeout=0)
-
-    else:
-        return redirect(url_for("content.home"))
+    return send_file(os.path.join(PRIVATE_FILES_LOCATION, flask_login.current_user.id, file_name),
+                     as_attachment=False, attachment_filename=file_name, cache_timeout=0)
 
 
 @files_operations_.route("/files_operations/delete_private/<file_name>", methods=["GET"])
 @flask_login.login_required
+@private_space_required
 def delete_private(file_name):
     current_user = flask_login.current_user
-    have_private_space = current_user.have_private_space
 
-    if have_private_space:
-        private_root = os.path.join(PRIVATE_FILES_LOCATION, current_user.username)
+    private_root = os.path.join(PRIVATE_FILES_LOCATION, current_user.username)
 
-        file_name = utils.decode_path(file_name)
+    file_name = utils.decode_path(file_name)
 
-        if os.path.isdir(os.path.join(private_root, file_name)):
-            shutil.rmtree(os.path.join(private_root, file_name))
+    if os.path.isdir(os.path.join(private_root, file_name)):
+        shutil.rmtree(os.path.join(private_root, file_name))
 
-        else:
-            os.remove(os.path.join(private_root, file_name))
+    else:
+        os.remove(os.path.join(private_root, file_name))
 
     return redirect(url_for("content.private"))
 
@@ -113,30 +103,27 @@ def watch(file_name):
 
 @files_operations_.route("/files_operations/create_dir/process", methods=["POST"])
 @flask_login.login_required
+@private_space_required
 def create_new_directory():
     current_user = flask_login.current_user
 
-    if current_user.have_private_space:
-        dir_name = request.form["dir_name"]
+    dir_name = request.form["dir_name"]
 
-        if dir_name:
-            path_to_user_files = os.path.join(PRIVATE_FILES_LOCATION, current_user.username)
+    if dir_name:
+        path_to_user_files = os.path.join(PRIVATE_FILES_LOCATION, current_user.username)
 
-            if dir_name in os.listdir(path_to_user_files):
-                message = "Directory exists"
-                return render_template("directory.html")
-
-            else:
-                os.mkdir(os.path.join(path_to_user_files, secure_filename(dir_name)))
-
-                return redirect(url_for("content.private"))
-
-        else:
-            message = "Directory name can't be empty"
+        if dir_name in os.listdir(path_to_user_files):
+            message = "Directory exists"
             return render_template("directory.html")
 
+        else:
+            os.mkdir(os.path.join(path_to_user_files, secure_filename(dir_name)))
+
+            return redirect(url_for("content.private"))
+
     else:
-        return redirect(url_for("content.home"))
+        message = "Directory name can't be empty"
+        return render_template("directory.html")
 
 
 @files_operations_.route("/files_operations/upload/finalize/move", methods=["POST", "GET"])
