@@ -2,3 +2,7 @@ __pycache__/
 .idea/
 .files/*
 .tmp/*
+mysql/
+.env
+home_drive/storage/
+migrations/

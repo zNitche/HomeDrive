@@ -1,7 +1,15 @@
-from __init__ import create_app
+import dotenv
+import os
+
+
+dotenv.load_dotenv(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".env"))
+
+
+from home_drive import create_app
 
 
 app = create_app()
+
 
 if __name__ == "__main__":
     APP_PORT = app.config["APP_PORT"]
