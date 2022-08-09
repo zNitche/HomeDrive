@@ -20,5 +20,9 @@ services:
     restart: unless-stopped
     ports:
       - "8080:8080"
+    volumes:
+      - ${STORAGE_FILES_PATH}:/HomeDrive/storage/files
+      - ${STORAGE_PRIVATE_PATH}:/HomeDrive/storage/private
+      - ${STORAGE_TMP_PATH}:/HomeDrive/storage/tmp
     env_file:
       - .env

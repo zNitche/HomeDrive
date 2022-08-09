@@ -7,7 +7,10 @@ def generate(path):
         "MYSQL_SERVER_PORT": "3306",
         "MYSQL_SERVER_HOST": "db",
         "DB_NAME": "app_db",
-        "DB_PATH": "./database/mysql"
+        "DB_PATH": "./database/mysql",
+        "STORAGE_FILES_PATH": "",
+        "STORAGE_PRIVATE_PATH": "",
+        "STORAGE_TMP_PATH": ""
     }
 
     parsed_args = [f"{key}={args[key]}" for key in args]

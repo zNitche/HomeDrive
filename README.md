@@ -4,7 +4,7 @@
 ---
 ### Install
 1. Clone this repo.
-2. Generate `.env` config file.
+2. Generate `.env` config file and change config values (`STORAGE_*_PATH` and `MYSQL_ROOT_PASSWORD`).
 ```
 python3 generate_dotenv.py
 ```
