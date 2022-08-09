@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import flask_migrate
 import os
-from config import Config
 
 
 db = SQLAlchemy()
@@ -21,20 +20,24 @@ def register_blueprints(app):
 
 
 def init_migrations(app):
-    migrate.init_app(app, db, directory=Config.MIGRATIONS_DIR_PATH)
+    migrations_dir_path = app.config["MIGRATIONS_DIR_PATH"]
 
-    if not os.path.exists(Config.MIGRATIONS_DIR_PATH):
-        flask_migrate.init(Config.MIGRATIONS_DIR_PATH)
+    migrate.init_app(app, db, directory=migrations_dir_path)
 
-    flask_migrate.migrate(Config.MIGRATIONS_DIR_PATH)
-    flask_migrate.upgrade(Config.MIGRATIONS_DIR_PATH)
+    if not os.path.exists(migrations_dir_path):
+        flask_migrate.init(migrations_dir_path)
+
+    flask_migrate.migrate(migrations_dir_path)
+    flask_migrate.upgrade(migrations_dir_path)
 
 
 def create_app():
     app = Flask(__name__, instance_relative_config=False)
+
     app.secret_key = os.urandom(25)
-    app.config.from_object('config.Config')
-    app.config['MAX_CONTENT_LENGTH'] = app.config["MAX_UPLOAD_SIZE"] * 1024 * 1024
+    app.config.from_object("config.Config")
+
+    app.config["MAX_CONTENT_LENGTH"] = app.config["MAX_UPLOAD_SIZE"] * 1024 * 1024
 
     login_manager = flask_login.LoginManager()
     login_manager.init_app(app)

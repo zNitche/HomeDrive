@@ -9,4 +9,4 @@ class User(db.Model, UserMixin):
     can_delete_files = db.Column(db.Boolean, default=False, nullable=False)
     have_private_space = db.Column(db.Boolean, default=False, nullable=False)
     can_upload = db.Column(db.Boolean, default=False, nullable=False)
-    max_files_size = db.Column(db.Integer, default=0,  nullable=False)
+    max_files_size = db.Column(db.Float, default=0,  nullable=False)

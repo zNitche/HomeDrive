@@ -4,5 +4,4 @@ __pycache__/
 .tmp/*
 mysql/
 .env
-home_drive/storage/
 migrations/
