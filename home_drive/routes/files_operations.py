@@ -34,7 +34,7 @@ def download_private(file_name):
         as_attachment = False
 
     return send_file(os.path.join(PRIVATE_FILES_LOCATION, current_user.username, file_name),
-                     as_attachment=as_attachment, attachment_filename=file_name, cache_timeout=0)
+                     as_attachment=as_attachment, download_name=file_name, max_age=0)
 
 
 @files_operations.route("/files_operations/watch_private/<file_name>", methods=["GET"])
@@ -44,7 +44,7 @@ def watch_private(file_name):
     file_name = utils.decode_path(file_name)
 
     return send_file(os.path.join(PRIVATE_FILES_LOCATION, flask_login.current_user.id, file_name),
-                     as_attachment=False, attachment_filename=file_name, cache_timeout=0)
+                     as_attachment=False, download_name=file_name, max_age=0)
 
 
 @files_operations.route("/files_operations/delete_private/<file_name>", methods=["GET"])
@@ -77,8 +77,8 @@ def download(file_name):
         as_attachment = False
 
     return send_file(os.path.join(FILES_LOCATION, file_name), as_attachment=as_attachment,
-                     attachment_filename=file_name,
-                     cache_timeout=0)
+                     download_name=file_name,
+                     max_age=0)
 
 
 @files_operations.route("/files_operations/delete/<file_name>", methods=["GET"])
@@ -97,8 +97,8 @@ def delete(file_name):
 def watch(file_name):
     file_name = utils.decode_path(file_name)
 
-    return send_file(os.path.join(FILES_LOCATION, file_name), as_attachment=False, attachment_filename=file_name,
-                     cache_timeout=0)
+    return send_file(os.path.join(FILES_LOCATION, file_name), as_attachment=False, download_name=file_name,
+                     max_age=0)
 
 
 @files_operations.route("/files_operations/create_dir/process", methods=["POST"])
