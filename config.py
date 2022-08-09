@@ -4,6 +4,7 @@ import os
 class Config:
     CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
     APP_DIR_PATH = os.path.join(CURRENT_DIR, "home_drive")
+    MIGRATIONS_DIR_PATH = os.path.join(CURRENT_DIR, "migrations")
 
     MAX_UPLOAD_SIZE = 200000  # max uploaded file size in MB
     MAX_SHARED_FILES_SIZE = 50000000000  # max size of files stored in system in bytes

@@ -1,10 +1,14 @@
 from flask import Flask
 import flask_login
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+import flask_migrate
 import os
+from config import Config
 
 
 db = SQLAlchemy()
+migrate = Migrate(compare_type=True)
 
 
 def register_blueprints(app):
@@ -14,6 +18,16 @@ def register_blueprints(app):
     app.register_blueprint(auth.auth)
     app.register_blueprint(files_operations.files_operations)
     app.register_blueprint(errors.errors)
+
+
+def init_migrations(app):
+    migrate.init_app(app, db, directory=Config.MIGRATIONS_DIR_PATH)
+
+    if not os.path.exists(Config.MIGRATIONS_DIR_PATH):
+        flask_migrate.init(Config.MIGRATIONS_DIR_PATH)
+
+    flask_migrate.migrate(Config.MIGRATIONS_DIR_PATH)
+    flask_migrate.upgrade(Config.MIGRATIONS_DIR_PATH)
 
 
 def create_app():
@@ -36,6 +50,7 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+        init_migrations(app)
         register_blueprints(app)
 
         return app
