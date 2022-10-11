@@ -1,8 +1,8 @@
-from flask import render_template, Blueprint, redirect, url_for, request, flash
+from flask import render_template, Blueprint, redirect, url_for, request
 from flask import current_app as app
 import flask_login
 import os
-from home_drive import utils
+from home_drive.utils import common_utils
 from home_drive.decorators import private_space_required
 
 
@@ -20,7 +20,7 @@ def home():
     if flask_login.current_user.is_authenticated:
         files = os.listdir(FILES_LOCATION)
 
-        current_size = f"{str(round(utils.get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
+        current_size = f"{str(round(common_utils.get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
         max_size = f"{MAX_SHARED_FILES_SIZE / 1000000000} GB"
 
         return render_template("index.html", files=files, max_size=max_size, current_size=current_size,
@@ -38,7 +38,7 @@ def private():
     dirs = []
 
     user_name = flask_login.current_user.username
-    utils.check_dir(os.path.join(PRIVATE_FILES_LOCATION, user_name))
+    common_utils.check_dir(os.path.join(PRIVATE_FILES_LOCATION, user_name))
 
     objects_path = os.path.join(PRIVATE_FILES_LOCATION, user_name)
     objects = os.listdir(objects_path)
@@ -52,7 +52,7 @@ def private():
 
     max_private_size = flask_login.current_user.max_files_size
 
-    current_size = f"{str(round(utils.get_current_files_size(os.path.join(PRIVATE_FILES_LOCATION, user_name)) / 1000000000, 2))} GB"
+    current_size = f"{str(round(common_utils.get_current_files_size(os.path.join(PRIVATE_FILES_LOCATION, user_name)) / 1000000000, 2))} GB"
     max_size = f"{max_private_size / 1000000000} GB"
 
     return render_template("private.html", files=files, dirs=dirs, max_size=max_size, current_size=current_size,
@@ -65,7 +65,7 @@ def upload_view():
     current_user = flask_login.current_user
 
     if current_user.have_private_space or current_user.can_upload:
-        current_size = f"{str(round(utils.get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
+        current_size = f"{str(round(common_utils.get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
         max_size = f"{MAX_SHARED_FILES_SIZE / 1000000000} GB"
 
         return render_template("upload.html", max_size=max_size, current_size=current_size)
@@ -78,7 +78,7 @@ def upload_view():
 @flask_login.login_required
 @private_space_required
 def new_directory_view():
-    current_size = f"{str(round(utils.get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
+    current_size = f"{str(round(common_utils.get_current_files_size(FILES_LOCATION) / 1000000000, 2))} GB"
     max_size = f"{MAX_SHARED_FILES_SIZE / 1000000000} GB"
 
     return render_template("directory.html", max_size=max_size, current_size=current_size)
@@ -97,7 +97,7 @@ def directory_content(dir_name):
 
         max_private_size = current_user.max_files_size
 
-        current_size = f"{str(round(utils.get_current_files_size(os.path.join(PRIVATE_FILES_LOCATION, current_user.username)) / 1000000000, 2))} GB"
+        current_size = f"{str(round(common_utils.get_current_files_size(os.path.join(PRIVATE_FILES_LOCATION, current_user.username)) / 1000000000, 2))} GB"
         max_size = f"{max_private_size / 1000000000} GB"
 
         return render_template("directory_content.html", files=files, max_size=max_size, current_size=current_size,

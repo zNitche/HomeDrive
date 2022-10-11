@@ -4,7 +4,7 @@ from flask import current_app as app
 import shutil
 import os
 from werkzeug.utils import secure_filename
-from home_drive import utils
+from home_drive.utils import common_utils
 from home_drive.decorators import private_space_required
 
 
@@ -25,7 +25,7 @@ DOWNLOAD_PREVIEW_FILES_TYPES = app.config["DOWNLOAD_PREVIEW_FILES_TYPES"]
 def download_private(file_name):
     current_user = flask_login.current_user
 
-    file_name = utils.decode_path(file_name)
+    file_name = common_utils.decode_path(file_name)
     as_attachment = True
 
     file_extension = file_name.split(".")[-1].lower()
@@ -41,7 +41,7 @@ def download_private(file_name):
 @flask_login.login_required
 @private_space_required
 def watch_private(file_name):
-    file_name = utils.decode_path(file_name)
+    file_name = common_utils.decode_path(file_name)
 
     return send_file(os.path.join(PRIVATE_FILES_LOCATION, flask_login.current_user.id, file_name),
                      as_attachment=False, download_name=file_name, max_age=0)
@@ -55,7 +55,7 @@ def delete_private(file_name):
 
     private_root = os.path.join(PRIVATE_FILES_LOCATION, current_user.username)
 
-    file_name = utils.decode_path(file_name)
+    file_name = common_utils.decode_path(file_name)
 
     if os.path.isdir(os.path.join(private_root, file_name)):
         shutil.rmtree(os.path.join(private_root, file_name))
@@ -95,7 +95,7 @@ def delete(file_name):
 @files_operations.route("/files_operations/watch/<file_name>", methods=["GET"])
 @flask_login.login_required
 def watch(file_name):
-    file_name = utils.decode_path(file_name)
+    file_name = common_utils.decode_path(file_name)
 
     return send_file(os.path.join(FILES_LOCATION, file_name), as_attachment=False, download_name=file_name,
                      max_age=0)
@@ -147,7 +147,7 @@ def move_upload():
             space = request.form["space"]
 
             if can_upload and space == "shared":
-                if os.path.getsize(tmp_file_path) + utils.get_current_files_size(
+                if os.path.getsize(tmp_file_path) + common_utils.get_current_files_size(
                         FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
 
                     if not os.path.exists(os.path.join(FILES_LOCATION, file_name)):
@@ -168,7 +168,7 @@ def move_upload():
                     return redirect(url_for("content.home"))
 
             if have_private_space and space == "private":
-                if os.path.getsize(tmp_file_path) + utils.get_current_files_size(
+                if os.path.getsize(tmp_file_path) + common_utils.get_current_files_size(
                         FILES_LOCATION) < MAX_SHARED_FILES_SIZE:
 
                     files_root_path = os.path.join(PRIVATE_FILES_LOCATION, current_user.username)
@@ -231,7 +231,7 @@ def upload():
     have_private_space = current_user.have_private_space
 
     if can_upload or have_private_space:
-        utils.check_dir(os.path.join(TMP_LOCATION, current_user.username))
+        common_utils.check_dir(os.path.join(TMP_LOCATION, current_user.username))
 
         tmp_file_path = os.path.join(TMP_LOCATION, current_user.username, "tmp_file")
 
@@ -277,7 +277,7 @@ def move_file_process():
 
             dest_dir = request.form["dirs"]
             file_name = request.form["file_name"]
-            file_name = utils.decode_path(file_name)
+            file_name = common_utils.decode_path(file_name)
 
             decoded_name_splited = file_name.split("/")
 

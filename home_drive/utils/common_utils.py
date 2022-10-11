@@ -1,6 +1,4 @@
 import os
-import json
-from config import Config
 from werkzeug.utils import secure_filename
 
 

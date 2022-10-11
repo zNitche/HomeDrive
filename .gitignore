@@ -6,3 +6,5 @@ mysql/
 .env
 migrations/
 storage/
+*.db
+database/

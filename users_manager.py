@@ -1,4 +1,6 @@
 from home_drive.models import User
+from home_drive.utils import db_utils
+from consts import DBConsts
 import sqlalchemy
 import sqlalchemy.orm
 import os
@@ -27,9 +29,15 @@ class UsersManager:
         return password
 
     def init_db_session(self):
-        from config import Config
+        db_uri = ""
 
-        engine = sqlalchemy.create_engine(Config.SQLALCHEMY_DATABASE_URI)
+        if os.environ.get("DB_MODE") == DBConsts.SQLITE_DB:
+            db_uri, _ = db_utils.setup_sqlite_db()
+
+        elif os.environ.get("DB_MODE") == DBConsts.MYSQL_DB:
+            db_uri, _ = db_utils.setup_mysql_db()
+
+        engine = sqlalchemy.create_engine(db_uri)
 
         self.db_session = sqlalchemy.orm.sessionmaker(engine)
 

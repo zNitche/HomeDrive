@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import flask_migrate
 import os
+from consts import DBConsts
+from home_drive.utils import db_utils
 
 
 db = SQLAlchemy()
@@ -31,6 +33,22 @@ def init_migrations(app):
     flask_migrate.upgrade(migrations_dir_path)
 
 
+def setup_db(app):
+    db_uri = ""
+    db_config = {}
+
+    if app.config["DB_MODE"] == DBConsts.SQLITE_DB:
+        db_uri, db_config = db_utils.setup_sqlite_db()
+
+    elif app.config["DB_MODE"] == DBConsts.MYSQL_DB:
+        db_uri, db_config = db_utils.setup_mysql_db()
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = db_config
+
+    db.init_app(app)
+
+
 def create_app():
     app = Flask(__name__, instance_relative_config=False)
 
@@ -42,7 +60,7 @@ def create_app():
     login_manager = flask_login.LoginManager()
     login_manager.init_app(app)
 
-    db.init_app(app)
+    setup_db(app)
 
     from home_drive import models
 
