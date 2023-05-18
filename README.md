@@ -1,6 +1,8 @@
 # HomeDrive
 ### Easy to use minimalist file server
 
+Django reimplementation [here](https://github.com/zNitche/IO)
+
 ---
 ## App + MySQL Setup:
 ### Install
